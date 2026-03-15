@@ -1,5 +1,6 @@
 "use client";
 
+import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useForm, FormProvider, useFieldArray, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,7 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { Plus, FileDown } from "lucide-react";
+import { Plus, FileDown, FileUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,7 @@ import { ExportDialog } from "@/components/export-dialog";
 import { SlidePreviewDialog } from "@/components/slide-preview-dialog";
 import { VerseOrderEditor } from "@/components/verse-order-editor";
 import { generateSng } from "@/lib/sng/generateSng";
+import { parseSng } from "@/lib/sng/parseSng";
 import { CATEGORIES, MUSICAL_KEYS, TEMPO_OPTIONS, type SongFormData } from "@/lib/sng/types";
 
 // ---------------------------------------------------------------------------
@@ -140,24 +142,17 @@ function mergeVerseOrderWithSections(
     sections: SongFormData["sections"]
 ): string {
     const available = sections.map(sectionMarker);
-    const current = parseVerseOrder(currentRaw);
+    const availableSet = new Set(available);
+    const current = parseVerseOrder(currentRaw).filter((marker) => availableSet.has(marker));
 
-    // Wiederholungen je Marker aus der aktuellen Reihenfolge übernehmen.
-    const repeatByMarker = new Map<string, number>();
-    current.forEach((marker) => {
-        repeatByMarker.set(marker, (repeatByMarker.get(marker) ?? 0) + 1);
-    });
+    if (current.length === 0) {
+        return serializeVerseOrder(available);
+    }
 
-    // Reihenfolge immer exakt wie die Abschnittsreihenfolge; neue Marker standardmäßig 1x.
-    const normalized: string[] = [];
-    available.forEach((marker) => {
-        const repeat = Math.max(1, Math.min(repeatByMarker.get(marker) ?? 1, 3));
-        for (let i = 0; i < repeat; i++) {
-            normalized.push(marker);
-        }
-    });
+    const currentSet = new Set(current);
+    const missingMarkers = available.filter((marker) => !currentSet.has(marker));
 
-    return serializeVerseOrder(normalized);
+    return serializeVerseOrder([...current, ...missingMarkers]);
 }
 
 // ---------------------------------------------------------------------------
@@ -294,9 +289,15 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     const [previewData, setPreviewData] = useState<SongFormData | null>(null);
     const [sngContent, setSngContent] = useState("");
     const [activeTab, setActiveTab] = useState("allgemein");
+    const [importState, setImportState] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>(null);
+    const [isImporting, setIsImporting] = useState(false);
     const [isTourRunning, setIsTourRunning] = useState(false);
     const [tourStepIndex, setTourStepIndex] = useState(0);
     const prevStructureSignatureRef = useRef<string | null>(null);
+    const importInputRef = useRef<HTMLInputElement | null>(null);
 
     function startTour() {
         setActiveTab("allgemein");
@@ -342,7 +343,8 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         handleSubmit,
         setValue,
         getValues,
-        formState: { errors },
+        reset,
+        formState: { errors, isDirty },
     } = methods;
 
     const { fields, append, remove, move } = useFieldArray({
@@ -389,6 +391,59 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         append(newSection("Vers", "", Number(langCount)));
     }
 
+    function handleOpenImportPicker() {
+        importInputRef.current?.click();
+    }
+
+    async function handleImportFileChange(event: ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        if (
+            isDirty &&
+            !window.confirm(
+                "Der aktuelle Formularinhalt wird durch den Import ersetzt. Möchtest du fortfahren?"
+            )
+        ) {
+            event.target.value = "";
+            return;
+        }
+
+        setIsImporting(true);
+        setImportState(null);
+
+        try {
+            const content = await file.text();
+            const importedData = parseSng(content);
+            const structureSignature = importedData.sections
+                .map((section) => `${section.id}|${section.type}|${section.number}`)
+                .join("||");
+
+            prevStructureSignatureRef.current = structureSignature;
+            reset(importedData);
+            setActiveTab("allgemein");
+            setPreviewOpen(false);
+            setPreviewData(null);
+            setExportOpen(false);
+            setSngContent("");
+            setImportState({
+                type: "success",
+                message: `${file.name} wurde importiert und kann jetzt weiterbearbeitet werden.`,
+            });
+        } catch (error) {
+            setImportState({
+                type: "error",
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Die Datei konnte nicht importiert werden.",
+            });
+        } finally {
+            setIsImporting(false);
+            event.target.value = "";
+        }
+    }
+
     useEffect(() => {
         const sections = getValues("sections");
         if (!sections?.length) return;
@@ -422,7 +477,6 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
 
     useEffect(() => {
         if (!tourStartSignal) return;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         startTour();
     }, [tourStartSignal]);
 
@@ -430,7 +484,6 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         if (!isTourRunning) return;
         const step = TOUR_STEPS[tourStepIndex];
         if (step?.tab) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveTab(step.tab);
         }
         const target = document.querySelector(step.targetSelector);
@@ -479,6 +532,28 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     return (
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
+                <input
+                    ref={importInputRef}
+                    type="file"
+                    accept=".sng,text/plain"
+                    className="sr-only"
+                    onChange={handleImportFileChange}
+                />
+
+                {importState && (
+                    <div
+                        role="status"
+                        aria-live="polite"
+                        className={
+                            importState.type === "error"
+                                ? "border-destructive/30 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm"
+                                : "border-primary/20 bg-primary/5 text-foreground rounded-lg border px-4 py-3 text-sm"
+                        }
+                    >
+                        {importState.message}
+                    </div>
+                )}
+
                 {/* ================================================================
             METADATEN
         ================================================================ */}
@@ -989,26 +1064,39 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
                 {/* ================================================================
             EXPORT
         ================================================================ */}
-                <div className="flex justify-end gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <Button
-                        id="tour-preview-btn"
                         type="button"
                         variant="outline"
                         size="lg"
-                        onClick={handleOpenPreview}
-                        className={getTourFocusClass("#tour-preview-btn")}
+                        onClick={handleOpenImportPicker}
+                        disabled={isImporting}
                     >
-                        Folienvorschau
+                        <FileUp className="mr-2 h-5 w-5" />
+                        {isImporting ? "Import läuft …" : "Bestehende .sng importieren"}
                     </Button>
-                    <Button
-                        id="tour-export-btn"
-                        type="submit"
-                        size="lg"
-                        className={getTourFocusClass("#tour-export-btn")}
-                    >
-                        <FileDown className="mr-2 h-5 w-5" />
-                        Exportieren
-                    </Button>
+
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        <Button
+                            id="tour-preview-btn"
+                            type="button"
+                            variant="outline"
+                            size="lg"
+                            onClick={handleOpenPreview}
+                            className={getTourFocusClass("#tour-preview-btn")}
+                        >
+                            Folienvorschau
+                        </Button>
+                        <Button
+                            id="tour-export-btn"
+                            type="submit"
+                            size="lg"
+                            className={getTourFocusClass("#tour-export-btn")}
+                        >
+                            <FileDown className="mr-2 h-5 w-5" />
+                            Exportieren
+                        </Button>
+                    </div>
                 </div>
             </form>
 

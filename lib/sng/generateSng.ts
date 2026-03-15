@@ -12,6 +12,25 @@ function buildMarker(section: SongSection): string {
     return section.type;
 }
 
+function isExportSeparator(line: string): boolean {
+    const trimmed = line.trim();
+    return trimmed === "--" || trimmed === "---";
+}
+
+function pushSanitizedLine(outputLines: string[], nextLine: string) {
+    const previousLine = outputLines[outputLines.length - 1];
+    if (
+        previousLine !== undefined &&
+        isExportSeparator(previousLine) &&
+        isExportSeparator(nextLine) &&
+        previousLine.trim() === nextLine.trim()
+    ) {
+        return;
+    }
+
+    outputLines.push(nextLine);
+}
+
 /**
  * Gibt alle Header-Zeilen in der SongBeamer-korrekten Reihenfolge zurück.
  */
@@ -35,7 +54,10 @@ function buildHeaders(meta: SongMetadata): string[] {
     if (meta.author) h.push(`#Author=${meta.author}`);
     if (meta.melody) h.push(`#Melody=${meta.melody}`);
     if (meta.translation) h.push(`#Translation=${meta.translation}`);
-    if (meta.publisher) h.push(`#Publisher=${meta.publisher}`);
+    if (meta.publisher) {
+        h.push(`#Publisher=${meta.publisher}`);
+        h.push(`#(c)=${meta.publisher}`);
+    }
     if (meta.rights) h.push(`#Rights=${meta.rights}`);
     if (meta.ccli) h.push(`#CCLI=${meta.ccli}`);
 
@@ -124,19 +146,19 @@ export function generateSng(data: SongFormData): string {
     const outputLines: string[] = [];
 
     // 1. Header
-    outputLines.push(...buildHeaders(metadata));
+    buildHeaders(metadata).forEach((line) => pushSanitizedLine(outputLines, line));
 
-    // 2. Leerzeile zwischen Header und Liedtext
-    outputLines.push("");
+    // 2. Trennzeile zwischen Header und Liedtext
+    pushSanitizedLine(outputLines, "---");
 
     // 3. Sektionen
     for (let i = 0; i < sections.length; i++) {
         const sectionLines = buildSectionLines(sections[i], metadata.langCount);
-        outputLines.push(...sectionLines);
+        sectionLines.forEach((line) => pushSanitizedLine(outputLines, line));
 
         // Abschnittstrennzeichen --- nach jeder Sektion außer der letzten
         if (i < sections.length - 1) {
-            outputLines.push("---");
+            pushSanitizedLine(outputLines, "---");
         }
     }
 

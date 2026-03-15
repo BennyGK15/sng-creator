@@ -36,6 +36,7 @@ function parseOrder(raw: string): VerseOrderItem[] {
         }
         result.push({ marker, repeat: 1 });
     }
+
     return result;
 }
 
@@ -213,7 +214,7 @@ export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
                                                 className={cn(
                                                     "tooltip-instant hover:bg-muted rounded px-1 text-xs transition-colors",
                                                     idx === items.length - 1 &&
-                                                        "pointer-events-none opacity-30"
+                                                    "pointer-events-none opacity-30"
                                                 )}
                                                 data-tooltip="Nach unten"
                                                 aria-label="Nach unten verschieben"
@@ -282,10 +283,7 @@ export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
                         </div>
 
                         <p className="text-muted-foreground text-xs">
-                            Gespeichert als:{" "}
-                            <code className="bg-muted rounded px-1 py-0.5 font-mono">
-                                {serializeOrder(items)}
-                            </code>
+                            Gespeichert als: <span className="bg-muted rounded px-1 py-0.5 font-mono">{serializeOrder(items)}</span>
                         </p>
                     </div>
                 );

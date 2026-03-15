@@ -25,6 +25,7 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 - Verwaltung von Liedabschnitten wie Vers, Refrain, Bridge, Intro oder Outro
 - Automatische Nummerierung gleichartiger Abschnitte
 - Drag-and-drop-Sortierung der Abschnitte
+- Import bestehender `.sng`-Dateien zur Weiterbearbeitung und Erweiterung um weitere Sprachen
 - Editor für die Abspielreihenfolge inklusive Wiederholungen und automatischem `STOP`
 - Folienvorschau zur Kontrolle der späteren Darstellung
 - Export als `.sng` und optional zusätzlich als `.txt`
@@ -69,12 +70,13 @@ pnpm format:check  # Formatierung prüfen
 
 ## Verwendung
 
-1. Titel und optionale Metadaten eintragen.
-2. Eine oder mehrere Sprachen festlegen.
-3. Liedabschnitte anlegen und ihre Texte erfassen.
-4. Reihenfolge der Abschnitte im Tab Abspielreihenfolge prüfen oder anpassen.
-5. Optional die Folienvorschau öffnen.
-6. Die fertige Datei als `.sng` oder `.txt` exportieren.
+1. Optional eine bestehende `.sng`-Datei importieren oder ein neues Lied anlegen.
+2. Titel und optionale Metadaten prüfen oder ergänzen.
+3. Eine oder mehrere Sprachen festlegen beziehungsweise zusätzliche Sprachen hinzufügen.
+4. Liedabschnitte anlegen, anpassen oder bestehende Texte weiterbearbeiten.
+5. Reihenfolge der Abschnitte im Tab Abspielreihenfolge prüfen oder anpassen.
+6. Optional die Folienvorschau öffnen.
+7. Die fertige Datei als `.sng` oder `.txt` exportieren.
 
 ## Generiertes Ausgabeformat
 
