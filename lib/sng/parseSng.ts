@@ -6,8 +6,7 @@ const SECTION_TYPE_ALIASES: Array<{
 }> = [
     { type: "Vers", aliases: ["Verse", "Vers"] },
     { type: "Strophe", aliases: ["Strophe"] },
-    { type: "Chorus", aliases: ["Chorus"] },
-    { type: "Refrain", aliases: ["Refrain", "Chorus (Refrain)"] },
+    { type: "Refrain", aliases: ["Refrain", "Chorus (Refrain)", "Chorus"] },
     { type: "Pre-Refrain", aliases: ["Pre-Refrain", "Pre-Chorus"] },
     { type: "Pre-Bridge", aliases: ["Pre-Bridge"] },
     { type: "Bridge", aliases: ["Bridge"] },
@@ -20,6 +19,7 @@ const SECTION_TYPE_ALIASES: Array<{
     { type: "Ending", aliases: ["Ending", "End"] },
     { type: "Teil", aliases: ["Teil", "Part"] },
     { type: "Vamp", aliases: ["Vamp"] },
+    { type: "Misc", aliases: ["Misc"] },
     { type: "Unbekannt", aliases: ["Unbekannt", "Unknown"] },
 ];
 

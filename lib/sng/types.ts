@@ -15,6 +15,7 @@ export const SECTION_TYPES = [
     "Ending",
     "Teil",
     "Vamp",
+    "Misc",
     "Unbekannt",
 ] as const;
 
@@ -37,6 +38,7 @@ export const SECTION_TYPE_LABELS: Record<SectionType, string> = {
     Ending: "Ending (Ende)",
     Teil: "Teil",
     Vamp: "Vamp",
+    Misc: "Misc",
     Unbekannt: "Unbekannt",
 };
 
