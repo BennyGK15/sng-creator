@@ -8,6 +8,16 @@ Mit dem SongBeamer Song-Editor lassen sich Liedmetadaten, Liedtexte und Abschnit
 
 Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine serverseitige Speicherung von Liedinhalten.
 
+## Screenshots
+
+| Gesamtüberblick                                            | Abschnittseditor                                             |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+| ![Gesamtüberblick](public/screenshots/Gesamtüberblick.png) | ![Abschnittseditor](public/screenshots/Abschnittseditor.png) |
+
+| Folienvorschau                                           | Export-Dialog                                          |
+| -------------------------------------------------------- | ------------------------------------------------------ |
+| ![Folienvorschau](public/screenshots/Folienvorschau.png) | ![Export-Dialog](public/screenshots/Export-Editor.png) |
+
 ## Features
 
 - Erfassung von Song-Metadaten wie Titel, Originaltitel, Autor, Melodie, Verlag, CCLI, Tonart oder Tempo
