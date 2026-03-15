@@ -306,12 +306,13 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
 
     function endTour() {
         setIsTourRunning(false);
+        setActiveTab("allgemein");
     }
 
     function nextTourStep() {
         setTourStepIndex((prev) => {
             if (prev >= TOUR_STEPS.length - 1) {
-                setIsTourRunning(false);
+                endTour();
                 return prev;
             }
             return prev + 1;
