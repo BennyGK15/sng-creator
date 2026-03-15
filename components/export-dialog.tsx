@@ -44,9 +44,9 @@ export function ExportDialog({
         const languageSuffix =
             langCount > 1
                 ? `_${languages
-                    .slice(0, Math.max(1, langCount))
-                    .map((lang, index) => getLanguageAbbreviation(lang, index))
-                    .join("-")}`
+                      .slice(0, Math.max(1, langCount))
+                      .map((lang, index) => getLanguageAbbreviation(lang, index))
+                      .join("-")}`
                 : "";
         return `${base}${languageSuffix}.sng`;
     }, [songTitle, langCount, languages]);
