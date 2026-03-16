@@ -7,14 +7,16 @@ import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
     title: "KI-Hinweis – SongBeamer Song-Editor",
-    description: "Informationen zur KI-Unterstützung bei der Entwicklung des SongBeamer Song-Editors.",
+    description:
+        "Informationen zur KI-Unterstützung bei der Entwicklung des SongBeamer Song-Editors.",
 };
 
 const models = [
     {
         name: "GitHub Copilot",
         model: "Claude Sonnet 4.5 / Claude Sonnet 4.6 / GPT-5.3-Codex",
-        provider: "Anthropic (via GitHub Copilot in VS Code) / OpenAI (via GitHub Copilot in VS Code)",
+        provider:
+            "Anthropic (via GitHub Copilot in VS Code) / OpenAI (via GitHub Copilot in VS Code)",
         verwendung:
             "Codegenerierung, Komponentenentwicklung, Architekturentscheidungen, Debugging, Dokumentation und Projektkonfiguration",
     },
@@ -53,15 +55,15 @@ export default function KiHinweisPage() {
                     </CardHeader>
                     <CardContent className="text-muted-foreground space-y-3 text-sm leading-relaxed">
                         <p>
-                            Der SongBeamer Song-Editor wurde mithilfe von
-                            KI-gestützten Entwicklungswerkzeugen erstellt. KI-Modelle wurden
-                            für Codegenerierung, Architekturentscheidungen,
-                            Komponenten&shy;entwicklung und Dokumentation eingesetzt.
+                            Der SongBeamer Song-Editor wurde mithilfe von KI-gestützten
+                            Entwicklungswerkzeugen erstellt. KI-Modelle wurden für Codegenerierung,
+                            Architekturentscheidungen, Komponenten&shy;entwicklung und Dokumentation
+                            eingesetzt.
                         </p>
                         <p>
                             Die inhaltliche Verantwortung für das Projekt, die Auswahl der
-                            eingesetzten Werkzeuge sowie die abschließende Prüfung und
-                            Freigabe aller Bestandteile liegt bei Benjamin Esenwein.
+                            eingesetzten Werkzeuge sowie die abschließende Prüfung und Freigabe
+                            aller Bestandteile liegt bei Benjamin Esenwein.
                         </p>
                     </CardContent>
                 </Card>
