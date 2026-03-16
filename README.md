@@ -28,7 +28,7 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 - Import bestehender `.sng`-Dateien zur Weiterbearbeitung und Erweiterung um weitere Sprachen
 - Editor für die Abspielreihenfolge inklusive Wiederholungen und automatischem `STOP`
 - Folienvorschau zur Kontrolle der späteren Darstellung
-- Export als `.sng` und optional zusätzlich als `.txt`
+- Export als `.sng`, als `.txt` oder als beide Formate gleichzeitig, sowie Kopieren in die Zwischenablage
 - Automatisch abgeleitete Dateinamen auf Basis von Titel und Sprachkürzeln
 - Produkttour direkt in der Oberfläche
 
@@ -41,7 +41,7 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 - React Hook Form
 - Zod
 - dnd-kit
-- shadcn/ui
+- @base-ui/react (via shadcn)
 
 ## Voraussetzungen
 
@@ -76,7 +76,7 @@ pnpm format:check  # Formatierung prüfen
 4. Liedabschnitte anlegen, anpassen oder bestehende Texte weiterbearbeiten.
 5. Reihenfolge der Abschnitte im Tab Abspielreihenfolge prüfen oder anpassen.
 6. Optional die Folienvorschau öffnen.
-7. Die fertige Datei als `.sng` oder `.txt` exportieren.
+7. Die fertige Datei als `.sng`, `.txt` oder beide Formate gleichzeitig exportieren oder den Inhalt direkt in die Zwischenablage kopieren.
 
 ## Generiertes Ausgabeformat
 

@@ -79,7 +79,7 @@ export function SectionEditor({
 
     return (
         <div ref={setNodeRef} style={style}>
-            <Card className="border-2">
+            <Card className="border-2 py-0">
                 <CardHeader className="flex flex-row items-center gap-2 p-3">
                     {/* Drag-Handle */}
                     <button
