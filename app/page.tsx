@@ -8,11 +8,9 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const [tourStartSignal, setTourStartSignal] = useState(0);
-  const impressumUrl = "https://dascredo.de/impressum";
-  const datenschutzUrl = "https://dascredo.de/datenschutz";
 
   return (
-    <main id="main-content" className="bg-background flex min-h-screen flex-col pt-8 pb-20">
+    <main id="main-content" className="bg-background flex min-h-screen flex-col pt-8">
       <div className="mx-auto w-full max-w-4xl space-y-6 px-4">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -36,38 +34,6 @@ export default function Home() {
         </div>
         <SongForm tourStartSignal={tourStartSignal} />
       </div>
-
-      <footer className="bg-muted text-muted-foreground fixed bottom-0 left-0 w-full border-t text-sm">
-        <div className="mx-auto flex w-full max-w-4xl justify-between px-4 py-4">
-          <span>© Benjamin Esenwein · v{process.env.NEXT_PUBLIC_APP_VERSION}</span>
-          <nav aria-label="Rechtliches" className="flex flex-wrap gap-x-4 gap-y-2">
-            <a
-              href="/ki-hinweis"
-              className="hover:text-foreground underline-offset-4 hover:underline"
-            >
-              KI-Hinweis
-            </a>
-            <a
-              href={impressumUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-foreground underline-offset-4 hover:underline"
-              aria-label="Impressum (öffnet in neuem Tab)"
-            >
-              Impressum
-            </a>
-            <a
-              href={datenschutzUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-foreground underline-offset-4 hover:underline"
-              aria-label="Datenschutzerklärung (öffnet in neuem Tab)"
-            >
-              Datenschutzerklärung
-            </a>
-          </nav>
-        </div>
-      </footer>
     </main>
   );
 }
