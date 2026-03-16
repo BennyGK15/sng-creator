@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" className={inter.variable}>
-      <body className="antialiased pb-20">
+      <body className="antialiased">
         <a
           href="#main-content"
           className="focus:bg-background sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-md focus:px-3 focus:py-2 focus:text-sm focus:shadow"
