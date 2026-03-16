@@ -13,22 +13,17 @@ export const TOUR_STEPS: TourStep[] = [
             "Hier pflegst du Titel, Copyright, Musikdaten und weitere Song-Infos über die Tabs.",
     },
     {
+        targetSelector: "#tour-tabs-list",
+        tab: "allgemein",
+        title: "Tabs nutzen",
+        description: "Wechsle durch die Bereiche, um alle Metadaten strukturiert zu erfassen.",
+    },
+    {
         targetSelector: "#tour-title-input",
         tab: "allgemein",
         title: "Titel eintragen",
         description:
             "Beginne mit dem Liedtitel. Das Feld ist Pflicht und wird auch für den Dateinamen genutzt.",
-    },
-    {
-        targetSelector: "#tour-tabs-list",
-        title: "Tabs nutzen",
-        description: "Wechsle durch die Bereiche, um alle Metadaten strukturiert zu erfassen.",
-    },
-    {
-        targetSelector: "#tour-tab-allgemein",
-        tab: "allgemein",
-        title: "Tab: Allgemein",
-        description: "Im Tab Allgemein pflegst du Titel, Sprachen und grundlegende Liedinfos.",
     },
     {
         targetSelector: "#tour-tab-copyright",
