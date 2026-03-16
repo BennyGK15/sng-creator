@@ -39,7 +39,7 @@ export default function Home() {
 
       <footer className="bg-muted text-muted-foreground fixed bottom-0 left-0 w-full border-t text-sm">
         <div className="mx-auto flex w-full max-w-4xl justify-between px-4 py-4">
-          <span>© Benjamin Esenwein</span>
+          <span>© Benjamin Esenwein · v{process.env.NEXT_PUBLIC_APP_VERSION}</span>
           <nav aria-label="Rechtliches" className="flex flex-wrap gap-x-4 gap-y-2">
             <a
               href="/ki-hinweis"
