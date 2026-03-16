@@ -151,7 +151,7 @@ export function SectionEditor({
                                 <SelectTrigger
                                     id={typeTriggerId}
                                     aria-labelledby={typeLabelId}
-                                    className="h-9"
+                                    className="h-9 w-32"
                                 >
                                     <SelectValue placeholder="Typ wählen…" />
                                 </SelectTrigger>
@@ -164,7 +164,7 @@ export function SectionEditor({
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="w-24">
+                        <div className="w-32">
                             <Label
                                 htmlFor={numberId}
                                 className="text-muted-foreground mb-1 block text-xs"
@@ -188,8 +188,8 @@ export function SectionEditor({
                             Number(langCount) === 3
                                 ? "grid gap-3 sm:grid-cols-3"
                                 : Number(langCount) === 2
-                                  ? "grid gap-3 sm:grid-cols-2"
-                                  : ""
+                                    ? "grid gap-3 sm:grid-cols-2"
+                                    : ""
                         }
                     >
                         {Array.from({ length: Math.max(Number(langCount), 1) }, (_, l) => (
