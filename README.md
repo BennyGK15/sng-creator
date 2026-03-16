@@ -1,5 +1,7 @@
 # SongBeamer Song-Editor
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=BennyGK15_sng-creator&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=BennyGK15_sng-creator)
+
 Ein browserbasierter Editor zum Erstellen von `.sng`-Dateien für SongBeamer. Die Anwendung richtet sich an Gemeinden, Worship-Teams und alle, die SongBeamer-kompatible Lieddateien ohne manuelle Formatkenntnisse pflegen oder exportieren möchten.
 
 ## Überblick
