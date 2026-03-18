@@ -75,7 +75,8 @@ export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDia
 
                 <div className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-muted-foreground text-xs">
-                        Grundlage: Abschnittsreihenfolge, Abspielreihenfolge und Sprach-Interleaving.
+                        Grundlage: Abschnittsreihenfolge, Abspielreihenfolge und
+                        Sprach-Interleaving.
                     </p>
                     <div className="flex items-center gap-2">
                         <Button

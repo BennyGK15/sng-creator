@@ -188,8 +188,8 @@ export function SectionEditor({
                             Number(langCount) === 3
                                 ? "grid gap-3 sm:grid-cols-3"
                                 : Number(langCount) === 2
-                                    ? "grid gap-3 sm:grid-cols-2"
-                                    : ""
+                                  ? "grid gap-3 sm:grid-cols-2"
+                                  : ""
                         }
                     >
                         {Array.from({ length: Math.max(Number(langCount), 1) }, (_, l) => (
