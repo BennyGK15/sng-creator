@@ -86,7 +86,7 @@ function buildHeaders(meta: SongMetadata): string[] {
     if (meta.comments) h.push(`#Comments=${meta.comments}`);
 
     // --- Editor / Version (vom Editor gesetzt) ---
-    h.push(`#Editor=SongBeamer - Song Editor`);
+    h.push(`#Editor=SongBeamer - Song Editor by Benjamin Esenwein`);
     h.push(`#Version=3`);
 
     return h;
