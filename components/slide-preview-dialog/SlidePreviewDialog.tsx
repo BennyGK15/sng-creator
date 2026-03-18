@@ -38,7 +38,7 @@ export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDia
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[90vh] min-w-1/2 flex-col gap-0 overflow-hidden p-0">
+            <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:min-w-[min(50vw,48rem)]">
                 <DialogHeader className="px-5 pt-5 pb-4">
                     <div className="flex items-center gap-2.5">
                         <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">

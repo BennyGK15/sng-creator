@@ -56,7 +56,7 @@ export function ExportDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[90vh] max-w-none min-w-1/2 flex-col gap-0 overflow-hidden p-0">
+            <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:min-w-[min(50vw,48rem)]">
                 <DialogHeader className="px-5 pt-5 pb-4">
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-2.5">
@@ -80,7 +80,7 @@ export function ExportDialog({
                 <div className="min-h-0 flex-1 overflow-auto">
                     <pre
                         aria-label="Vorschau des generierten SNG-Inhalts"
-                        className="text-foreground/90 p-4 font-mono text-xs leading-relaxed whitespace-pre select-all"
+                        className="text-foreground/90 p-4 font-mono text-xs leading-relaxed whitespace-pre select-all overflow-x-auto"
                     >
                         {sngContent}
                     </pre>
