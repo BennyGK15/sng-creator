@@ -25,7 +25,7 @@ export function SongTourOverlay({
         <div
             role="status"
             aria-live="polite"
-            className="bg-background/95 fixed right-4 bottom-20 z-50 w-[min(92vw,26rem)] rounded-lg border p-4 shadow-xl backdrop-blur sm:bottom-4"
+            className="bg-background/95 fixed right-4 bottom-20 z-60 w-[min(92vw,26rem)] rounded-lg border p-4 shadow-xl backdrop-blur sm:bottom-4"
         >
             <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
                 Produkttour • Schritt {tourStepIndex + 1} von {TOUR_STEPS.length}

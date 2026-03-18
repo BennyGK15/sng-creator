@@ -58,7 +58,7 @@ export default function ImpressumPage() {
                         </p>
                         {legalConfig.websiteUrl !== "https://example.com" && (
                             <p>
-                                Website: {" "}
+                                Website:{" "}
                                 <a
                                     href={legalConfig.websiteUrl}
                                     target="_blank"
@@ -91,7 +91,8 @@ export default function ImpressumPage() {
                             )}
                             {legalConfig.churchSupervisoryAuthority && (
                                 <p>
-                                    Zuständige kirchliche Aufsicht: {legalConfig.churchSupervisoryAuthority}
+                                    Zuständige kirchliche Aufsicht:{" "}
+                                    {legalConfig.churchSupervisoryAuthority}
                                 </p>
                             )}
                         </CardContent>
@@ -133,7 +134,8 @@ export default function ImpressumPage() {
                     </CardHeader>
                     <CardContent className="text-muted-foreground text-sm leading-relaxed">
                         <p>
-                            Die grundlegende technische Anwendung wurde entwickelt von {legalConfig.appDeveloper}.
+                            Die grundlegende technische Anwendung wurde entwickelt von{" "}
+                            {legalConfig.appDeveloper}.
                         </p>
                     </CardContent>
                 </Card>

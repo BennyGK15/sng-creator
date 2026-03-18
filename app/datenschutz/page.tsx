@@ -7,8 +7,7 @@ import { legalConfig } from "@/lib/legal";
 
 export const metadata: Metadata = {
     title: "Datenschutzerklärung – SongBeamer Song-Editor",
-    description:
-        "Datenschutzerklärung des SongBeamer Song-Editors gemäß DSGVO und BDSG.",
+    description: "Datenschutzerklärung des SongBeamer Song-Editors gemäß DSGVO und BDSG.",
 };
 
 export default function DatenschutzPage() {
@@ -69,7 +68,8 @@ export default function DatenschutzPage() {
                                 className="text-foreground underline underline-offset-4 hover:no-underline"
                             >
                                 Impressum
-                            </Link>.
+                            </Link>
+                            .
                         </p>
                     </CardContent>
                 </Card>
@@ -106,8 +106,8 @@ export default function DatenschutzPage() {
                         <p>
                             Diese Website wird auf Servern eines externen Hosting-Anbieters
                             betrieben. Beim Abrufen der Seiten werden durch den Hosting-Anbieter
-                            automatisch Zugriffsdaten in Server-Protokolldateien gespeichert.
-                            Dazu können gehören:
+                            automatisch Zugriffsdaten in Server-Protokolldateien gespeichert. Dazu
+                            können gehören:
                         </p>
                         <ul className="list-disc space-y-1 pl-5">
                             <li>IP-Adresse des anfragenden Geräts</li>
@@ -119,10 +119,10 @@ export default function DatenschutzPage() {
                         <p>
                             Rechtsgrundlage für diese Verarbeitung ist Art. 6 Abs. 1 lit. f DSGVO
                             (berechtigtes Interesse an dem sicheren und fehlerfreien Betrieb der
-                            Website). Die Protokolldaten werden nicht mit anderen
-                            personenbezogenen Daten zusammengeführt und nach spätestens
-                            {" "}{legalConfig.hostingRetentionDays} Tagen gelöscht, sofern keine gesetzliche Aufbewahrungspflicht
-                            besteht.
+                            Website). Die Protokolldaten werden nicht mit anderen personenbezogenen
+                            Daten zusammengeführt und nach spätestens{" "}
+                            {legalConfig.hostingRetentionDays} Tagen gelöscht, sofern keine
+                            gesetzliche Aufbewahrungspflicht besteht.
                         </p>
                         <p>Aktuell eingesetzter Hosting-Anbieter: {legalConfig.hostingProvider}.</p>
                     </CardContent>
@@ -182,10 +182,10 @@ export default function DatenschutzPage() {
                             >
                                 {legalConfig.websiteLabel}
                             </a>
-                            . Für die Inhalte und Datenschutzpraktiken dieser externen Seiten
-                            ist der jeweilige Anbieter verantwortlich. Beim Anklicken eines
-                            externen Links kann Ihre IP-Adresse an den jeweiligen Anbieter
-                            übermittelt werden.
+                            . Für die Inhalte und Datenschutzpraktiken dieser externen Seiten ist
+                            der jeweilige Anbieter verantwortlich. Beim Anklicken eines externen
+                            Links kann Ihre IP-Adresse an den jeweiligen Anbieter übermittelt
+                            werden.
                         </p>
                     </CardContent>
                 </Card>
@@ -202,8 +202,8 @@ export default function DatenschutzPage() {
                         </p>
                         <ul className="list-disc space-y-1 pl-5">
                             <li>
-                                <strong className="text-foreground">Auskunftsrecht</strong> über
-                                die zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO)
+                                <strong className="text-foreground">Auskunftsrecht</strong> über die
+                                zu Ihrer Person gespeicherten Daten (Art. 15 DSGVO)
                             </li>
                             <li>
                                 <strong className="text-foreground">Recht auf Berichtigung</strong>{" "}
@@ -226,8 +226,8 @@ export default function DatenschutzPage() {
                                 (Art. 20 DSGVO)
                             </li>
                             <li>
-                                <strong className="text-foreground">Widerspruchsrecht</strong>{" "}
-                                gegen die Verarbeitung (Art. 21 DSGVO)
+                                <strong className="text-foreground">Widerspruchsrecht</strong> gegen
+                                die Verarbeitung (Art. 21 DSGVO)
                             </li>
                         </ul>
                         <p>
@@ -251,9 +251,9 @@ export default function DatenschutzPage() {
                     <CardContent className="text-muted-foreground space-y-3 text-sm leading-relaxed">
                         <p>
                             Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über
-                            die Verarbeitung Ihrer personenbezogenen Daten zu beschweren
-                            (Art. 77 DSGVO). Die zuständige Aufsichtsbehörde richtet sich nach
-                            Ihrem gewöhnlichen Aufenthaltsort, Ihrem Arbeitsort oder dem Ort des
+                            die Verarbeitung Ihrer personenbezogenen Daten zu beschweren (Art. 77
+                            DSGVO). Die zuständige Aufsichtsbehörde richtet sich nach Ihrem
+                            gewöhnlichen Aufenthaltsort, Ihrem Arbeitsort oder dem Ort des
                             mutmaßlichen Verstoßes.
                         </p>
                     </CardContent>
@@ -266,10 +266,11 @@ export default function DatenschutzPage() {
                     </CardHeader>
                     <CardContent className="text-muted-foreground space-y-3 text-sm leading-relaxed">
                         <p>
-                            Diese Datenschutzerklärung hat den Stand {legalConfig.effectiveDateLabel}. Durch die
-                            Weiterentwicklung der Anwendung oder geänderte gesetzliche Vorgaben
-                            kann eine Anpassung erforderlich werden. Die jeweils aktuelle Fassung
-                            ist stets unter dieser URL abrufbar.
+                            Diese Datenschutzerklärung hat den Stand{" "}
+                            {legalConfig.effectiveDateLabel}. Durch die Weiterentwicklung der
+                            Anwendung oder geänderte gesetzliche Vorgaben kann eine Anpassung
+                            erforderlich werden. Die jeweils aktuelle Fassung ist stets unter dieser
+                            URL abrufbar.
                         </p>
                     </CardContent>
                 </Card>

@@ -80,7 +80,7 @@ export function ExportDialog({
                 <div className="min-h-0 flex-1 overflow-auto">
                     <pre
                         aria-label="Vorschau des generierten SNG-Inhalts"
-                        className="text-foreground/90 p-4 font-mono text-xs leading-relaxed whitespace-pre select-all overflow-x-auto"
+                        className="text-foreground/90 overflow-x-auto p-4 font-mono text-xs leading-relaxed whitespace-pre select-all"
                     >
                         {sngContent}
                     </pre>

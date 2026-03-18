@@ -6,7 +6,10 @@ export function SiteFooter() {
             <div className="mx-auto flex w-full max-w-4xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4">
                 <span>© Benjamin Esenwein · v{process.env.NEXT_PUBLIC_APP_VERSION}</span>
                 <nav aria-label="Rechtliches" className="flex flex-wrap gap-x-4 gap-y-2">
-                    <Link href="/ki-hinweis" className="hover:text-foreground underline-offset-4 hover:underline">
+                    <Link
+                        href="/ki-hinweis"
+                        className="hover:text-foreground underline-offset-4 hover:underline"
+                    >
                         KI-Hinweis
                     </Link>
                     <Link

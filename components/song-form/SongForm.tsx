@@ -2,13 +2,7 @@
 
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
-import {
-    FormProvider,
-    useFieldArray,
-    useForm,
-    useWatch,
-    type Resolver,
-} from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useWatch, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     KeyboardSensor,
@@ -265,7 +259,10 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         const sections = getValues("sections");
         sections.forEach((section, index) => {
             const currentTexts = section.texts ?? [];
-            const updated = Array.from({ length: count }, (_, textIndex) => currentTexts[textIndex] ?? "");
+            const updated = Array.from(
+                { length: count },
+                (_, textIndex) => currentTexts[textIndex] ?? ""
+            );
             setValue(`sections.${index}.texts`, updated, { shouldDirty: true });
         });
     }
@@ -303,7 +300,9 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
 
     useEffect(() => {
         const sections = getValues("sections");
-        const signature = sections.map((section) => `${section.id}|${section.type}|${section.number}`).join("||");
+        const signature = sections
+            .map((section) => `${section.id}|${section.type}|${section.number}`)
+            .join("||");
 
         if (prevStructureSignatureRef.current === null) {
             prevStructureSignatureRef.current = signature;

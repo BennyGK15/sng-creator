@@ -60,7 +60,7 @@ export function SongMetadataCard({
                     <div className="relative mb-4">
                         <TabsList
                             id="tour-tabs-list"
-                            className={`h-auto w-full overflow-x-auto pb-1 justify-start gap-1 whitespace-nowrap sm:flex-wrap sm:overflow-x-visible sm:pb-0 sm:whitespace-normal ${getTourFocusClass("#tour-tabs-list")}`}
+                            className={`h-auto w-full justify-start gap-1 overflow-x-auto pb-1 whitespace-nowrap sm:flex-wrap sm:overflow-x-visible sm:whitespace-normal ${getTourFocusClass("#tour-tabs-list")}`}
                         >
                             <TabsTrigger
                                 id="tour-tab-allgemein"
@@ -107,7 +107,7 @@ export function SongMetadataCard({
                         </TabsList>
                         <div
                             aria-hidden="true"
-                            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-card to-transparent sm:hidden"
+                            className="from-card pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l to-transparent sm:hidden"
                         />
                     </div>
 
@@ -123,10 +123,16 @@ export function SongMetadataCard({
                                     placeholder="Liedtitel eingeben …"
                                     className={`mt-1 ${getTourFocusClass("#tour-title-input")}`}
                                     aria-invalid={Boolean(errors.metadata?.title)}
-                                    aria-describedby={errors.metadata?.title ? "title-error" : undefined}
+                                    aria-describedby={
+                                        errors.metadata?.title ? "title-error" : undefined
+                                    }
                                 />
                                 {errors.metadata?.title && (
-                                    <p id="title-error" role="alert" className="text-destructive mt-1 text-sm">
+                                    <p
+                                        id="title-error"
+                                        role="alert"
+                                        className="text-destructive mt-1 text-sm"
+                                    >
                                         {errors.metadata.title.message}
                                     </p>
                                 )}
@@ -209,7 +215,9 @@ export function SongMetadataCard({
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => onLangCountChange(String(langCount + 1))}
+                                                onClick={() =>
+                                                    onLangCountChange(String(langCount + 1))
+                                                }
                                             >
                                                 + Sprache hinzufügen
                                             </Button>
@@ -219,7 +227,9 @@ export function SongMetadataCard({
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => onLangCountChange(String(langCount - 1))}
+                                                onClick={() =>
+                                                    onLangCountChange(String(langCount - 1))
+                                                }
                                                 className="text-muted-foreground hover:text-destructive"
                                             >
                                                 − Sprache entfernen
@@ -306,7 +316,8 @@ export function SongMetadataCard({
                                 <Select
                                     value={watchedTitle ? getValues("metadata.key") || "" : ""}
                                     onValueChange={(v) =>
-                                        v != null && setValue("metadata.key", v, { shouldDirty: true })
+                                        v != null &&
+                                        setValue("metadata.key", v, { shouldDirty: true })
                                     }
                                 >
                                     <SelectTrigger id="key" className="mt-1">
@@ -336,7 +347,8 @@ export function SongMetadataCard({
                                 <Select
                                     value={getValues("metadata.tempo") || ""}
                                     onValueChange={(v) =>
-                                        v != null && setValue("metadata.tempo", v, { shouldDirty: true })
+                                        v != null &&
+                                        setValue("metadata.tempo", v, { shouldDirty: true })
                                     }
                                 >
                                     <SelectTrigger id="tempo" className="mt-1">
