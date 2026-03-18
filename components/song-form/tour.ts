@@ -8,7 +8,7 @@ export type TourStep = {
 export const TOUR_STEPS: TourStep[] = [
     {
         targetSelector: "#tour-metadata-card",
-        title: "Metadaten starten",
+        title: "Metadaten",
         description:
             "Hier pflegst du Titel, Copyright, Musikdaten und weitere Song-Infos über die Tabs.",
     },
