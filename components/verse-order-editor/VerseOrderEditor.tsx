@@ -3,6 +3,8 @@
 import { useMemo } from "react";
 import { Controller, useWatch } from "react-hook-form";
 
+import { buildSlides } from "@/components/slide-preview-dialog/slide-utils";
+import type { PreviewSlide } from "@/components/slide-preview-dialog/types";
 import { Label } from "@/components/ui/label";
 import type { SongFormData } from "@/lib/sng/types";
 
@@ -17,8 +19,26 @@ interface VerseOrderEditorProps {
 
 export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
     const sections = useWatch({ control, name: "sections" }) as SongFormData["sections"];
+    const langCount = (useWatch({ control, name: "metadata.langCount" }) as number) || 1;
 
     const availableMarkers = useMemo(() => buildAvailableMarkers(sections), [sections]);
+    const previewSlidesByMarker = useMemo<Record<string, PreviewSlide[]>>(() => {
+        const result: Record<string, PreviewSlide[]> = {};
+
+        availableMarkers.forEach((marker) => {
+            const previewData = {
+                metadata: {
+                    langCount,
+                    verseOrder: `${marker},STOP`,
+                },
+                sections,
+            } as SongFormData;
+
+            result[marker] = buildSlides(previewData);
+        });
+
+        return result;
+    }, [availableMarkers, langCount, sections]);
 
     return (
         <Controller
@@ -73,6 +93,8 @@ export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
                         <VerseOrderList
                             items={items}
                             availableMarkers={availableMarkers}
+                            previewSlidesByMarker={previewSlidesByMarker}
+                            langCount={langCount}
                             onAddMarker={addMarker}
                             onSetRepeat={setRepeat}
                             onMoveItem={moveItem}
