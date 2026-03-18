@@ -10,11 +10,11 @@ export default function Home() {
   const [tourStartSignal, setTourStartSignal] = useState(0);
 
   return (
-    <main id="main-content" className="bg-background flex min-h-screen flex-col pt-8">
+    <main id="main-content" className="bg-background flex min-h-screen flex-col pt-8 pb-28">
       <div className="mx-auto w-full max-w-4xl space-y-6 px-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               SongBeamer Song-Editor
             </h1>
             <p className="text-muted-foreground mt-1">

@@ -57,53 +57,59 @@ export function SongMetadataCard({
             </CardHeader>
             <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                    <TabsList
-                        id="tour-tabs-list"
-                        className={`mb-4 h-auto w-full flex-wrap justify-start gap-1 whitespace-normal ${getTourFocusClass("#tour-tabs-list")}`}
-                    >
-                        <TabsTrigger
-                            id="tour-tab-allgemein"
-                            value="allgemein"
-                            className={getTourFocusClass("#tour-tab-allgemein")}
+                    <div className="relative mb-4">
+                        <TabsList
+                            id="tour-tabs-list"
+                            className={`h-auto w-full overflow-x-auto pb-1 justify-start gap-1 whitespace-nowrap sm:flex-wrap sm:overflow-x-visible sm:pb-0 sm:whitespace-normal ${getTourFocusClass("#tour-tabs-list")}`}
                         >
-                            Allgemein
-                        </TabsTrigger>
-                        <TabsTrigger
-                            id="tour-tab-copyright"
-                            value="copyright"
-                            className={getTourFocusClass("#tour-tab-copyright")}
-                        >
-                            Copyright
-                        </TabsTrigger>
-                        <TabsTrigger
-                            id="tour-tab-musik"
-                            value="musik"
-                            className={getTourFocusClass("#tour-tab-musik")}
-                        >
-                            Musik
-                        </TabsTrigger>
-                        <TabsTrigger
-                            id="tour-tab-kategorien"
-                            value="kategorien"
-                            className={getTourFocusClass("#tour-tab-kategorien")}
-                        >
-                            Kategorien
-                        </TabsTrigger>
-                        <TabsTrigger
-                            id="tour-tab-abspielreihenfolge"
-                            value="abspielreihenfolge"
-                            className={getTourFocusClass("#tour-tab-abspielreihenfolge")}
-                        >
-                            Abspielreihenfolge
-                        </TabsTrigger>
-                        <TabsTrigger
-                            id="tour-tab-erweitert"
-                            value="erweitert"
-                            className={getTourFocusClass("#tour-tab-erweitert")}
-                        >
-                            Erweitert
-                        </TabsTrigger>
-                    </TabsList>
+                            <TabsTrigger
+                                id="tour-tab-allgemein"
+                                value="allgemein"
+                                className={getTourFocusClass("#tour-tab-allgemein")}
+                            >
+                                Allgemein
+                            </TabsTrigger>
+                            <TabsTrigger
+                                id="tour-tab-copyright"
+                                value="copyright"
+                                className={getTourFocusClass("#tour-tab-copyright")}
+                            >
+                                Copyright
+                            </TabsTrigger>
+                            <TabsTrigger
+                                id="tour-tab-musik"
+                                value="musik"
+                                className={getTourFocusClass("#tour-tab-musik")}
+                            >
+                                Musik
+                            </TabsTrigger>
+                            <TabsTrigger
+                                id="tour-tab-kategorien"
+                                value="kategorien"
+                                className={getTourFocusClass("#tour-tab-kategorien")}
+                            >
+                                Kategorien
+                            </TabsTrigger>
+                            <TabsTrigger
+                                id="tour-tab-abspielreihenfolge"
+                                value="abspielreihenfolge"
+                                className={getTourFocusClass("#tour-tab-abspielreihenfolge")}
+                            >
+                                Abspielreihenfolge
+                            </TabsTrigger>
+                            <TabsTrigger
+                                id="tour-tab-erweitert"
+                                value="erweitert"
+                                className={getTourFocusClass("#tour-tab-erweitert")}
+                            >
+                                Erweitert
+                            </TabsTrigger>
+                        </TabsList>
+                        <div
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-card to-transparent sm:hidden"
+                        />
+                    </div>
 
                     <TabsContent value="allgemein" className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">

@@ -59,6 +59,31 @@ pnpm dev
 
 Danach ist die Anwendung standardmäßig unter `http://localhost:3000` erreichbar.
 
+## Rechtliche Angaben konfigurieren
+
+Für Impressum und Datenschutzerklärung können die Inhalte über Umgebungsvariablen angepasst werden. Dazu kann die Datei `.env.example` als Vorlage für eine lokale `.env.local` verwendet werden.
+
+Verfügbare Variablen:
+
+- `LEGAL_ENTITY_TYPE` mit `general` oder `church`
+- `LEGAL_OWNER_NAME`
+- `LEGAL_ADDRESS_LINE_1`
+- `LEGAL_ADDRESS_LINE_2`
+- `LEGAL_EMAIL`
+- `LEGAL_PHONE`
+- `LEGAL_WEBSITE_URL`
+- `LEGAL_WEBSITE_LABEL`
+- `LEGAL_VAT_ID`
+- `LEGAL_RESPONSIBLE_FOR_CONTENT`
+- `LEGAL_REPRESENTED_BY`
+- `LEGAL_CHURCH_BODY`
+- `LEGAL_CHURCH_SUPERVISORY_AUTHORITY`
+- `LEGAL_HOSTING_PROVIDER`
+- `LEGAL_HOSTING_LOG_RETENTION_DAYS`
+- `LEGAL_EFFECTIVE_DATE`
+
+Standardmäßig ist der Betreiber-Typ neutral (`general`). Nur wenn `LEGAL_ENTITY_TYPE="church"` gesetzt ist, wird im Impressum ein zusätzlicher kirchenspezifischer Abschnitt angezeigt. So bleibt der Standardtext für nicht-kirchliche Betreiber unverändert.
+
 ## Verfügbare Skripte
 
 ```bash
