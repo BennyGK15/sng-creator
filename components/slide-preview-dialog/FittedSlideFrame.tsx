@@ -52,12 +52,19 @@ export function FittedSlideFrame({ slide, slides, langCount }: FittedSlideFrameP
                 return fits;
             };
 
-            while (nextFontSize > minFontSize) {
-                const allFit = slides.every((candidateSlide) =>
-                    slideFits(nextFontSize, candidateSlide)
-                );
-                if (allFit) break;
-                nextFontSize -= 1;
+            const allSlidesFit = (candidate: number) =>
+                slides.every((candidateSlide) => slideFits(candidate, candidateSlide));
+
+            // Binäre Suche nach der größten Schriftgröße, bei der alle Folien passen
+            if (!allSlidesFit(maxFontSize)) {
+                let low = minFontSize;
+                let high = maxFontSize - 1;
+                while (low < high) {
+                    const mid = Math.ceil((low + high) / 2);
+                    if (allSlidesFit(mid)) low = mid;
+                    else high = mid - 1;
+                }
+                nextFontSize = low;
             }
 
             setBaseFontSize(nextFontSize);

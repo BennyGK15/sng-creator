@@ -15,10 +15,12 @@ export function buildSafeFilename(
     langCount: number,
     languages: string[]
 ): string {
-    const base = (songTitle || "song")
-        .replace(/[^a-zA-Z0-9äöüÄÖÜß\s\-_]/g, "")
-        .trim()
-        .replace(/\s+/g, "-");
+    // Buchstaben aller Sprachen erlauben (z. B. „Café“, „Señor“), Sonderzeichen entfernen
+    const base =
+        (songTitle || "")
+            .replace(/[^\p{L}\p{N}\s\-_]/gu, "")
+            .trim()
+            .replace(/\s+/g, "-") || "song";
 
     const languageSuffix =
         langCount > 1
@@ -47,8 +49,11 @@ export function downloadText(filename: string, sngContent: string) {
     const anchor = document.createElement("a");
     anchor.href = url;
     anchor.download = filename;
+    document.body.appendChild(anchor);
     anchor.click();
-    URL.revokeObjectURL(url);
+    anchor.remove();
+    // Erst freigeben, wenn der Browser den Download übernommen hat (Firefox/Safari)
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function copyToClipboard(content: string): Promise<void> {

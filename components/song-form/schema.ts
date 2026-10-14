@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { SECTION_TYPES } from "@/lib/sng/types";
+
 export const sectionSchema = z.object({
     id: z.string(),
-    type: z.string().min(1, "Bitte einen Abschnittstyp wählen"),
+    type: z.enum(SECTION_TYPES, { error: "Bitte einen Abschnittstyp wählen" }),
     number: z.string(),
     texts: z.array(z.string()),
 });
@@ -40,5 +42,3 @@ export const formSchema = z.object({
     metadata: metadataSchema,
     sections: z.array(sectionSchema).min(1, "Mindestens ein Abschnitt ist erforderlich"),
 });
-
-export type FormSchema = z.infer<typeof formSchema>;

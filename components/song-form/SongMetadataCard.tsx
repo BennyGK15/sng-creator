@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
+import { Minus, Plus } from "lucide-react";
 
 import { VerseOrderEditor } from "@/components/verse-order-editor";
 import { Badge } from "@/components/ui/badge";
@@ -20,25 +21,13 @@ import { CATEGORIES, MUSICAL_KEYS, TEMPO_OPTIONS, type SongFormData } from "@/li
 type SongMetadataCardProps = {
     activeTab: string;
     setActiveTab: Dispatch<SetStateAction<string>>;
-    langCount: number;
-    watchedTitle: string;
-    watchedLang2: string;
-    watchedLang3: string;
-    watchedCategories: string[];
-    onToggleCategory: (category: string) => void;
-    onLangCountChange: (value: string | null) => void;
+    onLangCountChange: (count: number) => void;
     getTourFocusClass: (selector: string) => string;
 };
 
 export function SongMetadataCard({
     activeTab,
     setActiveTab,
-    langCount,
-    watchedTitle,
-    watchedLang2,
-    watchedLang3,
-    watchedCategories,
-    onToggleCategory,
     onLangCountChange,
     getTourFocusClass,
 }: SongMetadataCardProps) {
@@ -49,6 +38,21 @@ export function SongMetadataCard({
         getValues,
         formState: { errors },
     } = useFormContext<SongFormData>();
+    const langCount = Number(useWatch({ control, name: "metadata.langCount" }) ?? 1);
+    const watchedTitle = useWatch({ control, name: "metadata.title" }) ?? "";
+    const watchedLang2 = useWatch({ control, name: "metadata.lang2" }) || "Sprache 2";
+    const watchedLang3 = useWatch({ control, name: "metadata.lang3" }) || "Sprache 3";
+    const watchedCategories = useWatch({ control, name: "metadata.categories" }) ?? [];
+    const watchedKey = useWatch({ control, name: "metadata.key" }) ?? "";
+    const watchedTempo = useWatch({ control, name: "metadata.tempo" }) ?? "";
+
+    function toggleCategory(category: string) {
+        const current = getValues("metadata.categories");
+        const next = current.includes(category)
+            ? current.filter((value) => value !== category)
+            : [...current, category];
+        setValue("metadata.categories", next, { shouldDirty: true });
+    }
 
     return (
         <Card id="tour-metadata-card" className={getTourFocusClass("#tour-metadata-card")}>
@@ -213,13 +217,14 @@ export function SongMetadataCard({
                                     <div className="flex gap-2 pt-1">
                                         {langCount < 3 && (
                                             <Button
+                                                type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() =>
-                                                    onLangCountChange(String(langCount + 1))
-                                                }
+                                                onClick={() => onLangCountChange(langCount + 1)}
+                                                className="text-primary hover:text-primary"
                                             >
-                                                + Sprache hinzufügen
+                                                <Plus />
+                                                Sprache hinzufügen
                                             </Button>
                                         )}
                                         {langCount > 1 && (
@@ -227,12 +232,11 @@ export function SongMetadataCard({
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() =>
-                                                    onLangCountChange(String(langCount - 1))
-                                                }
+                                                onClick={() => onLangCountChange(langCount - 1)}
                                                 className="text-muted-foreground hover:text-destructive"
                                             >
-                                                − Sprache entfernen
+                                                <Minus />
+                                                Sprache entfernen
                                             </Button>
                                         )}
                                     </div>
@@ -314,7 +318,7 @@ export function SongMetadataCard({
                             <div>
                                 <Label htmlFor="key">Tonart</Label>
                                 <Select
-                                    value={watchedTitle ? getValues("metadata.key") || "" : ""}
+                                    value={watchedKey}
                                     onValueChange={(v) =>
                                         v != null &&
                                         setValue("metadata.key", v, { shouldDirty: true })
@@ -345,7 +349,7 @@ export function SongMetadataCard({
                             <div>
                                 <Label htmlFor="tempo">Tempo</Label>
                                 <Select
-                                    value={getValues("metadata.tempo") || ""}
+                                    value={watchedTempo}
                                     onValueChange={(v) =>
                                         v != null &&
                                         setValue("metadata.tempo", v, { shouldDirty: true })
@@ -386,7 +390,7 @@ export function SongMetadataCard({
                                         <button
                                             key={category}
                                             type="button"
-                                            onClick={() => onToggleCategory(category)}
+                                            onClick={() => toggleCategory(category)}
                                             className="focus-visible:ring-ring rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                                             aria-pressed={checked}
                                             aria-label={`Kategorie ${category} ${checked ? "ausgewählt" : "nicht ausgewählt"}`}
@@ -419,7 +423,7 @@ export function SongMetadataCard({
                     </TabsContent>
 
                     <TabsContent value="abspielreihenfolge" className="space-y-4">
-                        <VerseOrderEditor control={control} />
+                        <VerseOrderEditor />
                     </TabsContent>
 
                     <TabsContent value="erweitert" className="space-y-4">

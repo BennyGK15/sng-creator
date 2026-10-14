@@ -23,7 +23,7 @@ export function ExportDialogActions({
                 <div
                     role="status"
                     aria-live="polite"
-                    className="flex items-center gap-1.5 text-sm font-medium text-green-600 sm:mr-auto"
+                    className="text-success flex items-center gap-1.5 text-sm font-medium sm:mr-auto"
                 >
                     <Check className="h-4 w-4" />
                     In Zwischenablage kopiert!
@@ -32,7 +32,7 @@ export function ExportDialogActions({
 
             <Button variant="outline" onClick={onCopy} className="w-full sm:w-auto">
                 {copied ? (
-                    <Check className="mr-2 h-4 w-4 text-green-600" />
+                    <Check className="text-success mr-2 h-4 w-4" />
                 ) : (
                     <Copy className="mr-2 h-4 w-4" />
                 )}

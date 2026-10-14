@@ -24,7 +24,7 @@ const models = [
 
 export default function KiHinweisPage() {
     return (
-        <main id="main-content" className="bg-background flex min-h-screen flex-col pt-8">
+        <main id="main-content" className="flex flex-1 flex-col pt-8 pb-12">
             <div className="mx-auto w-full max-w-4xl space-y-6 px-4">
                 <div>
                     <Link

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FileText } from "lucide-react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -27,6 +27,13 @@ export function ExportDialog({
     languages,
 }: ExportDialogProps) {
     const [copied, setCopied] = useState(false);
+    const copiedTimeoutRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (copiedTimeoutRef.current !== null) window.clearTimeout(copiedTimeoutRef.current);
+        };
+    }, []);
 
     const safeFilename = useMemo(
         () => buildSafeFilename(songTitle, langCount, languages),
@@ -38,7 +45,8 @@ export function ExportDialog({
     async function handleCopy() {
         await copyToClipboard(sngContent);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
+        if (copiedTimeoutRef.current !== null) window.clearTimeout(copiedTimeoutRef.current);
+        copiedTimeoutRef.current = window.setTimeout(() => setCopied(false), 2500);
     }
 
     function handleDownloadSng() {

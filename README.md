@@ -24,14 +24,16 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 
 - Erfassung von Song-Metadaten wie Titel, Originaltitel, Autor, Melodie, Verlag, CCLI, Tonart oder Tempo
 - Unterstützung für 1 bis 3 Sprachen pro Lied
-- Verwaltung von Liedabschnitten wie Vers, Refrain, Bridge, Intro oder Outro
+- Verwaltung von Liedabschnitten wie Vers, Refrain, Bridge, Intro oder Outro – farblich nach Art des Abschnitts markiert, damit die Liedstruktur auf einen Blick erkennbar ist
 - Automatische Nummerierung gleichartiger Abschnitte
 - Drag-and-drop-Sortierung der Abschnitte
-- Import bestehender `.sng`-Dateien zur Weiterbearbeitung und Erweiterung um weitere Sprachen
-- Editor für die Abspielreihenfolge inklusive Wiederholungen und automatischem `STOP`
-- Folienvorschau zur Kontrolle der späteren Darstellung
+- Import bestehender `.sng`-Dateien (UTF-8 und ANSI/Windows-1252 älterer SongBeamer-Versionen) zur Weiterbearbeitung und Erweiterung um weitere Sprachen
+- Editor für die Abspielreihenfolge inklusive Wiederholungen, Vorschau beim Darüberfahren und automatischem `STOP`
+- Folienvorschau zur Kontrolle der späteren Darstellung, mit den Pfeiltasten durchblätterbar
 - Export als `.sng`, als `.txt` oder als beide Formate gleichzeitig, sowie Kopieren in die Zwischenablage
 - Automatisch abgeleitete Dateinamen auf Basis von Titel und Sprachkürzeln
+- Warnung vor dem Schließen oder Neuladen des Tabs, solange ungespeicherte Eingaben vorhanden sind
+- Helles und dunkles Farbschema, abhängig von der Systemeinstellung
 - Produkttour direkt in der Oberfläche
 
 ## Tech-Stack
@@ -44,6 +46,7 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 - Zod
 - dnd-kit
 - @base-ui/react (via shadcn)
+- Vitest
 
 ## Voraussetzungen
 
@@ -91,16 +94,17 @@ pnpm dev           # Entwicklungsserver starten
 pnpm build         # Produktionsbuild erzeugen
 pnpm start         # Produktionsbuild lokal starten
 pnpm lint          # ESLint ausführen
+pnpm test          # Tests (Vitest) ausführen
 pnpm format        # Prettier auf relevante Dateien anwenden
 pnpm format:check  # Formatierung prüfen
 ```
 
 ## Verwendung
 
-1. Optional eine bestehende `.sng`-Datei importieren oder ein neues Lied anlegen.
+1. Optional über „.sng importieren“ eine bestehende Datei laden oder ein neues Lied anlegen.
 2. Titel und optionale Metadaten prüfen oder ergänzen.
 3. Eine oder mehrere Sprachen festlegen beziehungsweise zusätzliche Sprachen hinzufügen.
-4. Liedabschnitte anlegen, anpassen oder bestehende Texte weiterbearbeiten.
+4. Liedabschnitte anlegen, anpassen oder bestehende Texte weiterbearbeiten. Eine Zeile mit `--` teilt einen Abschnitt auf mehrere Folien auf.
 5. Reihenfolge der Abschnitte im Tab Abspielreihenfolge prüfen oder anpassen.
 6. Optional die Folienvorschau öffnen.
 7. Die fertige Datei als `.sng`, `.txt` oder beide Formate gleichzeitig exportieren oder den Inhalt direkt in die Zwischenablage kopieren.
@@ -111,7 +115,7 @@ Der Export orientiert sich am SongBeamer-Format:
 
 - Header-Zeilen wie `#Title=`, `#Author=`, `#VerseOrder=` oder `#CCLI=`
 - Abschnittsmarker wie `Vers 1`, `Refrain` oder `Bridge`
-- Trennung von Abschnitten mit `---`
+- Trennung von Abschnitten mit `---`, Folienumbrüche innerhalb eines Abschnitts mit `--`
 - Windows-Zeilenenden (`CRLF`), wie in SongBeamer üblich
 - Bei mehrsprachigen Liedern werden die Zeilen sprachweise verschränkt ausgegeben
 
