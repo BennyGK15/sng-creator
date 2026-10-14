@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Lock, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Lock, Plus, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
@@ -6,8 +6,8 @@ import {
     getLineGroupSpacing,
 } from "@/components/slide-preview-dialog/slide-utils";
 import type { PreviewSlide } from "@/components/slide-preview-dialog/types";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { getSectionStyle, getSectionTypeFromMarker } from "@/lib/sng/section-style";
 import { cn } from "@/lib/utils";
 
 import type { VerseOrderItem } from "./types";
@@ -25,6 +25,10 @@ type VerseOrderListProps = {
     onAddAll: () => void;
     serializedOrder: string;
 };
+
+function markerStyle(marker: string) {
+    return getSectionStyle(getSectionTypeFromMarker(marker));
+}
 
 export function VerseOrderList({
     items,
@@ -57,19 +61,16 @@ export function VerseOrderList({
         }, 140);
     }
 
+    function showPreview(marker: string) {
+        cancelPendingClose();
+        if (marker !== hoveredMarker) setPreviewSlideIndex(0);
+        setHoveredMarker(marker);
+    }
+
     const hoveredSlides = useMemo(() => {
         if (!hoveredMarker) return null;
         return previewSlidesByMarker[hoveredMarker] ?? [];
     }, [hoveredMarker, previewSlidesByMarker]);
-
-    useEffect(() => {
-        setPreviewSlideIndex(0);
-    }, [hoveredMarker]);
-
-    useEffect(() => {
-        if (!hoveredSlides?.length) return;
-        setPreviewSlideIndex((current) => Math.min(Math.max(current, 0), hoveredSlides.length - 1));
-    }, [hoveredSlides]);
 
     useEffect(() => {
         return () => {
@@ -77,13 +78,16 @@ export function VerseOrderList({
         };
     }, []);
 
-    const hoveredSlide = hoveredSlides?.[previewSlideIndex] ?? null;
+    const slideCount = hoveredSlides?.length ?? 0;
+    // Index begrenzen, falls die Vorschau nach einer Textänderung weniger Folien hat
+    const slideIndex = Math.min(previewSlideIndex, Math.max(slideCount - 1, 0));
+    const hoveredSlide = hoveredSlides?.[slideIndex] ?? null;
 
     return (
         <>
             <div className="relative" onMouseLeave={scheduleClosePreview}>
-                <p className="text-muted-foreground mb-1.5 text-xs">
-                    Abschnitt hinzufügen — einfach anklicken:
+                <p className="text-muted-foreground mb-2 text-xs">
+                    Zum Hinzufügen anklicken. Beim Darüberfahren siehst du eine Vorschau.
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                     {availableMarkers.length === 0 && (
@@ -96,76 +100,62 @@ export function VerseOrderList({
                             key={marker}
                             type="button"
                             onClick={() => onAddMarker(marker)}
-                            onMouseEnter={() => {
-                                cancelPendingClose();
-                                setHoveredMarker(marker);
-                            }}
-                            onFocus={() => setHoveredMarker(marker)}
+                            onMouseEnter={() => showPreview(marker)}
+                            onFocus={() => showPreview(marker)}
                             onBlur={() =>
                                 setHoveredMarker((current) => (current === marker ? null : current))
                             }
-                            className="focus-visible:ring-ring rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-                            title={`„${marker}" zur Reihenfolge hinzufügen`}
+                            style={markerStyle(marker)}
+                            className="focus-visible:ring-ring/50 inline-flex h-7 items-center gap-1 rounded-full border border-(--section)/40 bg-(--section)/8 pr-3 pl-2 text-xs font-medium transition-colors select-none hover:bg-(--section)/18 focus-visible:ring-3 focus-visible:outline-none"
                             aria-label={`Abschnitt ${marker} zur Reihenfolge hinzufügen`}
                         >
-                            <Badge
-                                variant="outline"
-                                className="hover:bg-primary hover:text-primary-foreground cursor-pointer transition-colors select-none"
-                            >
-                                + {marker}
-                            </Badge>
+                            <Plus className="size-3.5 text-(--section)" />
+                            {marker}
                         </button>
                     ))}
                 </div>
 
                 {hoveredMarker && (
                     <div
-                        className="absolute top-full left-0 z-30 mt-2 w-[min(44rem,92vw)] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 shadow-xl"
+                        className="absolute top-full left-0 z-30 mt-2 w-[min(44rem,calc(100vw-2rem))] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 shadow-xl"
                         onMouseEnter={cancelPendingClose}
                         onMouseLeave={scheduleClosePreview}
                     >
                         <div className="flex items-center justify-between gap-2">
-                            <p className="text-[11px] tracking-[0.16em] text-zinc-400 uppercase">
-                                Vorschau: {hoveredMarker}
+                            <p className="text-xs text-zinc-400">
+                                Vorschau: <span className="text-zinc-200">{hoveredMarker}</span>
+                                {hoveredSlide && hoveredSlide.sectionSlideCount > 1 && (
+                                    <span>
+                                        {` · Folie ${hoveredSlide.slideInSection} von ${hoveredSlide.sectionSlideCount}`}
+                                    </span>
+                                )}
                             </p>
-                            {hoveredSlides && hoveredSlides.length > 1 && (
+                            {slideCount > 1 && (
                                 <div className="flex items-center gap-1">
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            setPreviewSlideIndex((prev) => Math.max(0, prev - 1))
+                                            setPreviewSlideIndex(Math.max(0, slideIndex - 1))
                                         }
-                                        disabled={previewSlideIndex === 0}
-                                        className={cn(
-                                            "rounded border border-zinc-600 p-1 transition-colors",
-                                            previewSlideIndex === 0
-                                                ? "cursor-not-allowed opacity-40"
-                                                : "hover:bg-zinc-800"
-                                        )}
+                                        disabled={slideIndex === 0}
+                                        className="rounded border border-zinc-600 p-1 transition-colors enabled:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
                                         aria-label="Vorherige Folie anzeigen"
-                                        title="Vorherige Folie"
                                     >
                                         <ChevronLeft className="h-3.5 w-3.5" />
                                     </button>
                                     <p className="text-[11px] text-zinc-400 tabular-nums">
-                                        {previewSlideIndex + 1} / {hoveredSlides.length}
+                                        {slideIndex + 1} / {slideCount}
                                     </p>
                                     <button
                                         type="button"
                                         onClick={() =>
-                                            setPreviewSlideIndex((prev) =>
-                                                Math.min((hoveredSlides?.length ?? 1) - 1, prev + 1)
+                                            setPreviewSlideIndex(
+                                                Math.min(slideCount - 1, slideIndex + 1)
                                             )
                                         }
-                                        disabled={previewSlideIndex === hoveredSlides.length - 1}
-                                        className={cn(
-                                            "rounded border border-zinc-600 p-1 transition-colors",
-                                            previewSlideIndex === hoveredSlides.length - 1
-                                                ? "cursor-not-allowed opacity-40"
-                                                : "hover:bg-zinc-800"
-                                        )}
+                                        disabled={slideIndex === slideCount - 1}
+                                        className="rounded border border-zinc-600 p-1 transition-colors enabled:hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-40"
                                         aria-label="Nächste Folie anzeigen"
-                                        title="Nächste Folie"
                                     >
                                         <ChevronRight className="h-3.5 w-3.5" />
                                     </button>
@@ -173,32 +163,24 @@ export function VerseOrderList({
                             )}
                         </div>
                         {hoveredSlide ? (
-                            <>
-                                {hoveredSlide.sectionSlideCount > 1 && (
-                                    <p className="mt-0.5 text-[11px] text-zinc-400">
-                                        Folie {hoveredSlide.slideInSection} /{" "}
-                                        {hoveredSlide.sectionSlideCount}
+                            <div className="mt-2 space-y-0.5 text-center font-semibold tracking-tight">
+                                {hoveredSlide.lines.map((line, idx) => (
+                                    <p
+                                        key={`${hoveredMarker}-${idx}-${line}`}
+                                        style={{
+                                            fontSize: `${16 * getLanguageScale(langCount > 1 ? idx % langCount : 0)}px`,
+                                            lineHeight: 1.22,
+                                            marginTop: `${getLineGroupSpacing(idx, langCount)}px`,
+                                        }}
+                                        className="break-normal whitespace-nowrap"
+                                    >
+                                        {line || " "}
                                     </p>
-                                )}
-                                <div className="mt-2 space-y-0.5 text-center font-semibold tracking-tight">
-                                    {hoveredSlide.lines.map((line, idx) => (
-                                        <p
-                                            key={`${hoveredMarker}-${idx}-${line}`}
-                                            style={{
-                                                fontSize: `${16 * getLanguageScale(langCount > 1 ? idx % langCount : 0)}px`,
-                                                lineHeight: 1.22,
-                                                marginTop: `${getLineGroupSpacing(idx, langCount)}px`,
-                                            }}
-                                            className="break-normal whitespace-nowrap"
-                                        >
-                                            {line || "\u00a0"}
-                                        </p>
-                                    ))}
-                                </div>
-                            </>
+                                ))}
+                            </div>
                         ) : (
                             <p className="mt-2 text-xs text-zinc-400">
-                                Keine darstellbaren Folien.
+                                Dieser Abschnitt hat noch keinen Text.
                             </p>
                         )}
                     </div>
@@ -206,119 +188,126 @@ export function VerseOrderList({
             </div>
 
             <div>
-                <p className="text-muted-foreground mb-1.5 text-xs">Festgelegte Reihenfolge:</p>
-                {items.length === 0 ? (
-                    <p className="text-muted-foreground text-xs italic">
-                        Noch leer — Abschnitte oben anklicken, um sie hinzuzufügen.
-                    </p>
-                ) : (
-                    <ol className="space-y-1">
-                        {items.map((item, idx) => (
-                            <li
-                                key={`${item.marker}-${idx}`}
-                                className="group flex items-center gap-1.5"
-                            >
-                                <span className="text-muted-foreground w-5 text-right text-xs tabular-nums select-none">
-                                    {idx + 1}.
-                                </span>
-                                <span className="bg-muted flex-1 rounded px-2 py-0.5 text-sm font-medium">
-                                    {item.marker}
-                                </span>
-                                <span className="border-border inline-flex items-center overflow-hidden rounded-md border">
-                                    {[1, 2, 3].map((count) => (
-                                        <button
-                                            key={count}
-                                            type="button"
-                                            onClick={() => onSetRepeat(idx, count as 1 | 2 | 3)}
-                                            aria-pressed={item.repeat === count}
-                                            className={cn(
-                                                "h-6 px-1.5 text-[11px] tabular-nums transition-colors",
-                                                "border-border border-r last:border-r-0",
-                                                item.repeat === count
-                                                    ? "bg-primary text-primary-foreground"
-                                                    : "bg-background hover:bg-muted"
-                                            )}
-                                            title={`${count}x wiederholen`}
-                                            aria-label={`${count}x wiederholen`}
-                                        >
-                                            {count}x
-                                        </button>
-                                    ))}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => onMoveItem(idx, -1)}
-                                    disabled={idx === 0}
-                                    className={cn(
-                                        "tooltip-instant hover:bg-muted rounded px-1 text-xs tabular-nums transition-colors",
-                                        idx === 0 && "pointer-events-none opacity-30"
-                                    )}
-                                    data-tooltip="Nach oben"
-                                    aria-label="Nach oben verschieben"
-                                >
-                                    ↑
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => onMoveItem(idx, 1)}
-                                    disabled={idx === items.length - 1}
-                                    className={cn(
-                                        "tooltip-instant hover:bg-muted rounded px-1 text-xs transition-colors",
-                                        idx === items.length - 1 && "pointer-events-none opacity-30"
-                                    )}
-                                    data-tooltip="Nach unten"
-                                    aria-label="Nach unten verschieben"
-                                >
-                                    ↓
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => onRemoveItem(idx)}
-                                    className="tooltip-instant text-muted-foreground hover:text-destructive transition-colors"
-                                    data-tooltip="Entfernen"
-                                    aria-label="Aus Reihenfolge entfernen"
-                                >
-                                    <X className="h-3.5 w-3.5" />
-                                </button>
-                            </li>
-                        ))}
-                    </ol>
-                )}
-
-                <div className="mt-1 flex items-center gap-1.5 opacity-60">
-                    <span className="text-muted-foreground w-5 text-right text-xs tabular-nums select-none">
-                        {items.length + 1}.
-                    </span>
-                    <span className="bg-muted flex flex-1 items-center gap-1.5 rounded px-2 py-0.5 text-sm font-medium">
-                        <Lock className="h-3 w-3" />
-                        STOP
-                    </span>
-                    <span className="text-muted-foreground pr-1 text-xs italic">immer gesetzt</span>
+                <div className="mb-2 flex items-center justify-between gap-2">
+                    <p className="text-muted-foreground text-xs">Festgelegte Reihenfolge</p>
+                    {availableMarkers.length > 0 && items.length === 0 && (
+                        <Button type="button" variant="outline" size="sm" onClick={onAddAll}>
+                            Alle der Reihe nach hinzufügen
+                        </Button>
+                    )}
+                    {items.length > 0 && (
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="text-muted-foreground hover:text-destructive"
+                            onClick={onReset}
+                        >
+                            Reihenfolge leeren
+                        </Button>
+                    )}
                 </div>
-            </div>
 
-            <div className="flex flex-wrap items-center gap-2">
-                {availableMarkers.length > 0 && items.length === 0 && (
-                    <Button type="button" variant="outline" size="sm" onClick={onAddAll}>
-                        Alle hinzufügen
-                    </Button>
-                )}
-                {items.length > 0 && (
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="text-muted-foreground hover:text-destructive"
-                        onClick={onReset}
-                    >
-                        Reihenfolge leeren
-                    </Button>
-                )}
+                <ol className="space-y-1">
+                    {items.length === 0 && (
+                        <li className="text-muted-foreground rounded-md border border-dashed px-3 py-3 text-xs">
+                            Noch leer. Klicke oben auf einen Abschnitt, um ihn hinzuzufügen.
+                        </li>
+                    )}
+                    {items.map((item, idx) => (
+                        <li
+                            key={`${item.marker}-${idx}`}
+                            style={markerStyle(item.marker)}
+                            className="flex items-center gap-1.5"
+                        >
+                            <span className="text-muted-foreground w-5 text-right text-xs tabular-nums select-none">
+                                {idx + 1}.
+                            </span>
+                            <span className="flex h-7 flex-1 items-center gap-2 rounded-md bg-(--section)/10 px-2 text-sm font-medium">
+                                <span
+                                    aria-hidden="true"
+                                    className="size-2 shrink-0 rounded-full bg-(--section)"
+                                />
+                                {item.marker}
+                            </span>
+                            <span
+                                role="group"
+                                aria-label={`Wiederholungen für ${item.marker}`}
+                                className="inline-flex items-center overflow-hidden rounded-md border"
+                            >
+                                {[1, 2, 3].map((count) => (
+                                    <button
+                                        key={count}
+                                        type="button"
+                                        onClick={() => onSetRepeat(idx, count as 1 | 2 | 3)}
+                                        aria-pressed={item.repeat === count}
+                                        className={cn(
+                                            "h-7 px-2 text-xs tabular-nums transition-colors",
+                                            "border-r last:border-r-0",
+                                            item.repeat === count
+                                                ? "bg-primary text-primary-foreground"
+                                                : "bg-background hover:bg-muted"
+                                        )}
+                                        aria-label={`${count}x wiederholen`}
+                                    >
+                                        {count}×
+                                    </button>
+                                ))}
+                            </span>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => onMoveItem(idx, -1)}
+                                disabled={idx === 0}
+                                className="tooltip-instant"
+                                data-tooltip="Nach oben"
+                                aria-label="Nach oben verschieben"
+                            >
+                                <ChevronUp />
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => onMoveItem(idx, 1)}
+                                disabled={idx === items.length - 1}
+                                className="tooltip-instant"
+                                data-tooltip="Nach unten"
+                                aria-label="Nach unten verschieben"
+                            >
+                                <ChevronDown />
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => onRemoveItem(idx)}
+                                className="tooltip-instant text-muted-foreground hover:text-destructive"
+                                data-tooltip="Entfernen"
+                                aria-label="Aus Reihenfolge entfernen"
+                            >
+                                <X />
+                            </Button>
+                        </li>
+                    ))}
+
+                    <li className="flex items-center gap-1.5 opacity-60">
+                        <span className="text-muted-foreground w-5 text-right text-xs tabular-nums select-none">
+                            {items.length + 1}.
+                        </span>
+                        <span className="bg-muted flex h-7 flex-1 items-center gap-2 rounded-md px-2 text-sm font-medium">
+                            <Lock className="h-3 w-3" />
+                            STOP
+                        </span>
+                        <span className="text-muted-foreground pr-1 text-xs">immer am Ende</span>
+                    </li>
+                </ol>
             </div>
 
             <p className="text-muted-foreground text-xs">
-                Gespeichert als:{" "}
-                <span className="bg-muted rounded px-1 py-0.5 font-mono">{serializedOrder}</span>
+                In der Datei gespeichert als:{" "}
+                <code className="bg-muted rounded px-1 py-0.5 break-all">{serializedOrder}</code>
             </p>
         </>
     );

@@ -2,7 +2,7 @@
 
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
-import { FormProvider, useFieldArray, useForm, useWatch, type Resolver } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useWatch, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     KeyboardSensor,
@@ -12,18 +12,21 @@ import {
     type DragEndEvent,
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { X } from "lucide-react";
 
 import { ExportDialog } from "@/components/export-dialog";
 import { SlidePreviewDialog } from "@/components/slide-preview-dialog";
+import { Button } from "@/components/ui/button";
 import { generateSng } from "@/lib/sng/generateSng";
-import { parseSng } from "@/lib/sng/parseSng";
+import { decodeSngBytes, parseSng } from "@/lib/sng/parseSng";
 import type { SongFormData } from "@/lib/sng/types";
 
-import { SongActionButtons } from "./SongActionButtons";
+import { SongActionBar } from "./SongActionBar";
+import { SongHeader } from "./SongHeader";
 import { SongMetadataCard } from "./SongMetadataCard";
 import { SongSectionsCard } from "./SongSectionsCard";
 import { SongTourOverlay } from "./SongTourOverlay";
-import { formSchema, type FormSchema } from "./schema";
+import { formSchema } from "./schema";
 import { TOUR_STEPS } from "./tour";
 import {
     createDefaultValues,
@@ -33,7 +36,7 @@ import {
     reorderVerseOrderForSectionMove,
 } from "./utils";
 
-export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) {
+export function SongForm() {
     const [exportOpen, setExportOpen] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewData, setPreviewData] = useState<SongFormData | null>(null);
@@ -51,7 +54,7 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     const importInputRef = useRef<HTMLInputElement | null>(null);
 
     const methods = useForm<SongFormData>({
-        resolver: zodResolver(formSchema) as unknown as Resolver<SongFormData>,
+        resolver: zodResolver(formSchema),
         defaultValues: createDefaultValues(),
         mode: "onSubmit",
     });
@@ -61,6 +64,7 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         handleSubmit,
         setValue,
         getValues,
+        setFocus,
         reset,
         formState: { errors, isDirty },
     } = methods;
@@ -74,7 +78,6 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     const langCount = useWatch({ control, name: "metadata.langCount" }) ?? 1;
     const watchedSections = useWatch({ control, name: "sections" });
     const watchedTitle = useWatch({ control, name: "metadata.title" }) ?? "";
-    const watchedCategories = useWatch({ control, name: "metadata.categories" }) ?? [];
     const watchedLang1 = useWatch({ control, name: "metadata.lang1" }) || "Sprache 1";
     const watchedLang2 = useWatch({ control, name: "metadata.lang2" }) || "Sprache 2";
     const watchedLang3 = useWatch({ control, name: "metadata.lang3" }) || "Sprache 3";
@@ -86,9 +89,15 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         })
     );
 
+    function goToTourStep(index: number) {
+        setTourStepIndex(index);
+        const tab = TOUR_STEPS[index]?.tab;
+        if (tab) setActiveTab(tab);
+    }
+
     function startTour() {
         setActiveTab("allgemein");
-        setTourStepIndex(0);
+        goToTourStep(0);
         setIsTourRunning(true);
     }
 
@@ -98,17 +107,15 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     }
 
     function nextTourStep() {
-        setTourStepIndex((prev) => {
-            if (prev >= TOUR_STEPS.length - 1) {
-                endTour();
-                return prev;
-            }
-            return prev + 1;
-        });
+        if (tourStepIndex >= TOUR_STEPS.length - 1) {
+            endTour();
+            return;
+        }
+        goToTourStep(tourStepIndex + 1);
     }
 
     function prevTourStep() {
-        setTourStepIndex((prev) => Math.max(0, prev - 1));
+        goToTourStep(Math.max(0, tourStepIndex - 1));
     }
 
     function getTourFocusClass(selector: string): string {
@@ -209,7 +216,7 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         setImportState(null);
 
         try {
-            const content = await file.text();
+            const content = decodeSngBytes(await file.arrayBuffer());
             const importedData = parseSng(content);
             const structureSignature = importedData.sections
                 .map((section) => `${section.id}|${section.type}|${section.number}`)
@@ -240,10 +247,7 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         }
     }
 
-    function handleLangCountChange(value: string | null) {
-        if (!value) return;
-
-        const count = Number(value);
+    function handleLangCountChange(count: number) {
         const previousCount = Number(getValues("metadata.langCount"));
 
         if (count < previousCount) {
@@ -267,22 +271,28 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
         });
     }
 
-    function toggleCategory(category: string) {
-        const current = getValues("metadata.categories");
-        const next = current.includes(category)
-            ? current.filter((value) => value !== category)
-            : [...current, category];
-        setValue("metadata.categories", next, { shouldDirty: true });
-    }
-
-    function onSubmit(data: SongFormData | FormSchema) {
-        const content = generateSng(data as SongFormData);
+    function onSubmit(data: SongFormData) {
+        const content = generateSng(data);
         setSngContent(content);
         setExportOpen(true);
     }
 
+    function onInvalid(formErrors: FieldErrors<SongFormData>) {
+        // Fehler können in einem gerade nicht sichtbaren Tab liegen – dorthin springen.
+        if (formErrors.metadata?.title) {
+            setActiveTab("allgemein");
+            window.requestAnimationFrame(() => setFocus("metadata.title"));
+            return;
+        }
+        if (formErrors.sections) {
+            document
+                .getElementById("tour-sections-card")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    }
+
     function handleOpenPreview() {
-        setPreviewData(getValues() as SongFormData);
+        setPreviewData(getValues());
         setPreviewOpen(true);
     }
 
@@ -320,27 +330,33 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
     }, [watchedSections, getValues, setValue]);
 
     useEffect(() => {
-        if (!tourStartSignal) return;
-        startTour();
-    }, [tourStartSignal]);
-
-    useEffect(() => {
         if (!isTourRunning) return;
 
-        const step = TOUR_STEPS[tourStepIndex];
-        if (step?.tab) {
-            setActiveTab(step.tab);
+        const targetElement = document.querySelector(TOUR_STEPS[tourStepIndex].targetSelector);
+        targetElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, [isTourRunning, tourStepIndex]);
+
+    // Warnt vor dem Neuladen oder Schließen des Tabs, solange ungespeicherte Eingaben existieren.
+    useEffect(() => {
+        if (!isDirty) return;
+
+        function handleBeforeUnload(event: BeforeUnloadEvent) {
+            event.preventDefault();
         }
 
-        const targetElement = document.querySelector(step.targetSelector);
-        if (!targetElement) return;
-
-        targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, [isTourRunning, tourStepIndex]);
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [isDirty]);
 
     return (
         <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)} noValidate className="space-y-6">
+                <SongHeader
+                    isImporting={isImporting}
+                    onOpenImportPicker={handleOpenImportPicker}
+                    onStartTour={startTour}
+                />
+
                 <input
                     ref={importInputRef}
                     type="file"
@@ -355,32 +371,27 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
                         aria-live="polite"
                         className={
                             importState.type === "error"
-                                ? "border-destructive/30 bg-destructive/5 text-destructive rounded-lg border px-4 py-3 text-sm"
-                                : "border-primary/20 bg-primary/5 text-foreground rounded-lg border px-4 py-3 text-sm"
+                                ? "border-destructive/30 bg-destructive/5 text-destructive flex items-start gap-3 rounded-lg border py-2.5 pr-2 pl-4 text-sm"
+                                : "border-primary/25 bg-secondary text-secondary-foreground flex items-start gap-3 rounded-lg border py-2.5 pr-2 pl-4 text-sm"
                         }
                     >
-                        {importState.message}
+                        <p className="flex-1 py-0.5">{importState.message}</p>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            onClick={() => setImportState(null)}
+                            aria-label="Hinweis schließen"
+                        >
+                            <X />
+                        </Button>
                     </div>
                 )}
 
                 <SongMetadataCard
                     activeTab={activeTab}
                     setActiveTab={setActiveTab}
-                    langCount={Number(langCount)}
-                    watchedTitle={watchedTitle}
-                    watchedLang2={watchedLang2}
-                    watchedLang3={watchedLang3}
-                    watchedCategories={watchedCategories}
-                    onToggleCategory={toggleCategory}
                     onLangCountChange={handleLangCountChange}
-                    getTourFocusClass={getTourFocusClass}
-                />
-
-                <SongActionButtons
-                    isImporting={isImporting}
-                    onOpenImportPicker={handleOpenImportPicker}
-                    onRestart={handleRestart}
-                    onOpenPreview={handleOpenPreview}
                     getTourFocusClass={getTourFocusClass}
                 />
 
@@ -391,20 +402,17 @@ export function SongForm({ tourStartSignal = 0 }: { tourStartSignal?: number }) 
                             : undefined
                     }
                     fields={fields}
-                    control={control}
                     remove={remove}
                     sensors={sensors}
                     onDragEnd={handleDragEnd}
                     onMoveUp={handleMoveUp}
                     onMoveDown={handleMoveDown}
                     onAddSection={handleAddSection}
+                    langCount={Number(langCount)}
                     getTourFocusClass={getTourFocusClass}
                 />
 
-                <SongActionButtons
-                    withTourTargets
-                    isImporting={isImporting}
-                    onOpenImportPicker={handleOpenImportPicker}
+                <SongActionBar
                     onRestart={handleRestart}
                     onOpenPreview={handleOpenPreview}
                     getTourFocusClass={getTourFocusClass}

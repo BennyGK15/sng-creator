@@ -1,3 +1,11 @@
+import {
+    generateId,
+    getSectionMarker,
+    parseVerseOrder,
+    SECTION_SEPARATOR,
+    serializeVerseOrder,
+    SLIDE_SEPARATOR,
+} from "./markers";
 import { type SongFormData, type SongMetadata, type SongSection } from "./types";
 
 const SECTION_TYPE_ALIASES: Array<{
@@ -6,7 +14,8 @@ const SECTION_TYPE_ALIASES: Array<{
 }> = [
     { type: "Vers", aliases: ["Verse", "Vers"] },
     { type: "Strophe", aliases: ["Strophe"] },
-    { type: "Refrain", aliases: ["Refrain", "Chorus (Refrain)", "Chorus"] },
+    { type: "Refrain", aliases: ["Refrain", "Chorus (Refrain)"] },
+    { type: "Chorus", aliases: ["Chorus"] },
     { type: "Pre-Refrain", aliases: ["Pre-Refrain", "Pre-Chorus"] },
     { type: "Pre-Bridge", aliases: ["Pre-Bridge"] },
     { type: "Bridge", aliases: ["Bridge"] },
@@ -98,23 +107,24 @@ function splitDelimitedValues(value: string | undefined): string[] {
         .filter(Boolean);
 }
 
-function parseMarkerToken(markerLine: string): Pick<SongSection, "type" | "number"> {
+/**
+ * Erkennt Marker wie „Vers 1“, „Refrain“, „Verse2“ oder „Strophe 1a“.
+ * Liedzeilen, die nur zufällig mit einem Typnamen beginnen
+ * („Bridge over troubled water“), sind keine Marker.
+ */
+const MARKER_SUFFIX_PATTERN = /^\s*(\d+[a-z]?|[a-z])?$/i;
+
+function parseMarkerToken(markerLine: string): Pick<SongSection, "type" | "number"> | null {
     const trimmedMarker = markerLine.trim();
     const normalizedMarker = trimmedMarker.toLowerCase();
 
-    const matchedPattern = SECTION_MARKER_PATTERNS.find(({ normalizedAlias }) => {
-        if (!normalizedMarker.startsWith(normalizedAlias)) return false;
+    const matchedPattern = SECTION_MARKER_PATTERNS.find(
+        ({ normalizedAlias }) =>
+            normalizedMarker.startsWith(normalizedAlias) &&
+            MARKER_SUFFIX_PATTERN.test(trimmedMarker.slice(normalizedAlias.length))
+    );
 
-        const nextChar = trimmedMarker.charAt(normalizedAlias.length);
-        return nextChar === "" || /\s|\d|[A-Za-z]/.test(nextChar);
-    });
-
-    if (!matchedPattern) {
-        return {
-            type: "Unbekannt",
-            number: "",
-        };
-    }
+    if (!matchedPattern) return null;
 
     return {
         type: matchedPattern.type,
@@ -160,7 +170,7 @@ function splitSectionBlocks(bodyLines: string[]): string[][] {
     let currentBlock: string[] = [];
 
     bodyLines.forEach((line) => {
-        if (line.trim() === "---") {
+        if (line.trim() === SECTION_SEPARATOR) {
             if (currentBlock.length > 0) {
                 blocks.push(currentBlock);
                 currentBlock = [];
@@ -178,10 +188,6 @@ function splitSectionBlocks(bodyLines: string[]): string[][] {
     return blocks.filter((block) => block.some((line) => line.trim().length > 0));
 }
 
-function parseSectionMarker(markerLine: string): Pick<SongSection, "type" | "number"> {
-    return parseMarkerToken(markerLine);
-}
-
 function trimTrailingEmptyLines(lines: string[]): string[] {
     let endIndex = lines.length;
     while (endIndex > 0 && lines[endIndex - 1].trim() === "") {
@@ -191,34 +197,54 @@ function trimTrailingEmptyLines(lines: string[]): string[] {
 }
 
 function normalizeImportedTextLines(lines: string[]): string[] {
-    return trimTrailingEmptyLines(lines).map((line) => (line.trim() === "" ? "--" : line));
+    return trimTrailingEmptyLines(lines).map((line) =>
+        line.trim() === "" ? SLIDE_SEPARATOR : line
+    );
 }
 
+/**
+ * Mehrsprachige Abschnitte sind zeilenweise verschränkt (Sprache 1, Sprache 2, …),
+ * ein Folienumbruch `--` steht aber nur einmal für alle Sprachen. Die Zuordnung
+ * zur Sprache beginnt deshalb nach jedem Umbruch neu.
+ */
 function parseSectionTexts(contentLines: string[], langCount: number): string[] {
     if (langCount <= 1) {
         return [normalizeImportedTextLines(contentLines).join("\n")];
     }
 
     const textsByLanguage = Array.from({ length: langCount }, () => [] as string[]);
-    contentLines.forEach((line, index) => {
-        textsByLanguage[index % langCount].push(line);
-    });
+    let slideLines: string[] = [];
 
-    return textsByLanguage.map((lines) => normalizeImportedTextLines(lines).join("\n"));
+    function flushSlide() {
+        slideLines.forEach((line, index) => textsByLanguage[index % langCount].push(line));
+        slideLines = [];
+    }
+
+    contentLines.forEach((line) => {
+        if (line.trim() !== SLIDE_SEPARATOR) {
+            slideLines.push(line);
+            return;
+        }
+        flushSlide();
+        textsByLanguage.forEach((lines) => lines.push(SLIDE_SEPARATOR));
+    });
+    flushSlide();
+
+    return textsByLanguage.map((lines) => trimTrailingEmptyLines(lines).join("\n"));
 }
 
 function parseSections(bodyLines: string[], langCount: number): SongSection[] {
     const blocks = splitSectionBlocks(bodyLines);
 
     return blocks.map((block) => {
-        const markerLine = block[0]?.trim();
-        const contentLines = block.slice(1);
-        const marker = parseSectionMarker(markerLine);
+        // Der Marker ist optional – ohne ihn gehört auch die erste Zeile zum Liedtext.
+        const marker = parseMarkerToken(block[0] ?? "");
+        const contentLines = marker ? block.slice(1) : block;
 
         return {
-            id: crypto.randomUUID(),
-            type: marker.type,
-            number: marker.number,
+            id: generateId(),
+            type: marker?.type ?? "Unbekannt",
+            number: marker?.number ?? "",
             texts: parseSectionTexts(contentLines, langCount),
         };
     });
@@ -227,21 +253,27 @@ function parseSections(bodyLines: string[], langCount: number): SongSection[] {
 function normalizeVerseOrder(rawVerseOrder: string, sections: SongSection[]): string {
     if (!rawVerseOrder.trim()) return "";
 
-    const availableMarkers = new Set(
-        sections.map((section) => `${section.type}${section.number ? ` ${section.number}` : ""}`)
-    );
+    const availableMarkers = new Set(sections.map(getSectionMarker));
 
-    const normalizedTokens = rawVerseOrder
-        .split(",")
-        .map((token) => token.trim())
-        .filter((token) => token.length > 0 && token !== "STOP")
-        .map((token) => {
-            const parsed = parseMarkerToken(token);
-            const normalized = `${parsed.type}${parsed.number ? ` ${parsed.number}` : ""}`;
-            return availableMarkers.has(normalized) ? normalized : token;
-        });
+    const normalizedTokens = parseVerseOrder(rawVerseOrder).map((token) => {
+        const parsed = parseMarkerToken(token);
+        const normalized = parsed ? getSectionMarker(parsed) : token;
+        return availableMarkers.has(normalized) ? normalized : token;
+    });
 
-    return [...normalizedTokens, "STOP"].join(",");
+    return serializeVerseOrder(normalizedTokens);
+}
+
+/**
+ * Liest den Dateiinhalt als UTF-8. Ältere SongBeamer-Versionen speichern
+ * ANSI (Windows-1252) – dann wären Umlaute als „�“ kaputt, daher der Fallback.
+ */
+export function decodeSngBytes(bytes: ArrayBuffer): string {
+    try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    } catch {
+        return new TextDecoder("windows-1252").decode(bytes);
+    }
 }
 
 export function parseSng(content: string): SongFormData {

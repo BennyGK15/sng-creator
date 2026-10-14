@@ -1,18 +1,12 @@
+import {
+    generateId,
+    getSectionMarker,
+    parseVerseOrder,
+    serializeVerseOrder,
+} from "@/lib/sng/markers";
 import type { SongFormData } from "@/lib/sng/types";
 
 export const DEFAULT_LANG_COUNT = 1;
-
-function generateId(): string {
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        return crypto.randomUUID();
-    }
-    // Fallback for non-secure contexts (HTTP on mobile)
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c === "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
-}
 
 export function newSection(
     type: string,
@@ -77,21 +71,6 @@ export function getNormalizedSectionNumbers(sections: SongFormData["sections"]):
     });
 }
 
-function sectionMarker(section: SongFormData["sections"][number]): string {
-    return `${section.type}${section.number ? ` ${section.number}` : ""}`;
-}
-
-function parseVerseOrder(raw: string): string[] {
-    return raw
-        .split(",")
-        .map((s) => s.trim())
-        .filter((s) => s.length > 0 && s !== "STOP");
-}
-
-function serializeVerseOrder(markers: string[]): string {
-    return [...markers, "STOP"].join(",");
-}
-
 function normalizeSections(sections: SongFormData["sections"]): SongFormData["sections"] {
     const normalizedNumbers = getNormalizedSectionNumbers(sections);
     return sections.map((section, index) => ({
@@ -110,11 +89,11 @@ export function reorderVerseOrderForSectionMove(
     const currentMarkers = parseVerseOrder(currentRaw);
 
     if (currentMarkers.length === 0) {
-        return serializeVerseOrder(nextNormalizedSections.map(sectionMarker));
+        return serializeVerseOrder(nextNormalizedSections.map(getSectionMarker));
     }
 
     const previousMarkersById = new Map(
-        previousNormalizedSections.map((section) => [section.id, sectionMarker(section)])
+        previousNormalizedSections.map((section) => [section.id, getSectionMarker(section)])
     );
     const repeatCountsById = new Map<string, number>();
     let currentIndex = 0;
@@ -138,7 +117,7 @@ export function reorderVerseOrderForSectionMove(
 
     const nextMarkers: string[] = [];
     nextNormalizedSections.forEach((section) => {
-        const marker = sectionMarker(section);
+        const marker = getSectionMarker(section);
         const repeatCount = repeatCountsById.get(section.id) ?? 0;
         const occurrences = repeatCount > 0 ? repeatCount : 1;
 
@@ -154,7 +133,7 @@ export function mergeVerseOrderWithSections(
     currentRaw: string,
     sections: SongFormData["sections"]
 ): string {
-    const available = sections.map(sectionMarker);
+    const available = sections.map(getSectionMarker);
     const availableSet = new Set(available);
     const current = parseVerseOrder(currentRaw).filter((marker) => availableSet.has(marker));
 

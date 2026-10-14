@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 import "./globals.css";
 import { SiteFooter } from "@/components/site-footer";
 
-const inter = Inter({
-    variable: "--font-inter",
+const figtree = Figtree({
+    variable: "--font-figtree",
     subsets: ["latin"],
     display: "swap",
 });
@@ -21,8 +21,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="de" className={inter.variable}>
-            <body className="antialiased">
+        <html lang="de" className={figtree.variable}>
+            <body className="flex min-h-screen flex-col antialiased">
                 <a
                     href="#main-content"
                     className="focus:bg-background sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-100 focus:rounded-md focus:px-3 focus:py-2 focus:text-sm focus:shadow"

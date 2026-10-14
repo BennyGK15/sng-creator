@@ -1,13 +1,10 @@
+import { getSectionMarker, parseVerseOrder, serializeVerseOrder } from "@/lib/sng/markers";
 import type { SongFormData } from "@/lib/sng/types";
 
-import { MAX_REPEAT, STOP, type VerseOrderItem } from "./types";
+import { MAX_REPEAT, type VerseOrderItem } from "./types";
 
 export function parseOrder(raw: string): VerseOrderItem[] {
-    const tokens = raw
-        .split(",")
-        .map((value) => value.trim())
-        .filter((value) => value.length > 0 && value !== STOP);
-
+    const tokens = parseVerseOrder(raw);
     const result: VerseOrderItem[] = [];
 
     for (const marker of tokens) {
@@ -24,15 +21,9 @@ export function parseOrder(raw: string): VerseOrderItem[] {
 }
 
 export function serializeOrder(items: VerseOrderItem[]): string {
-    const expanded: string[] = [];
-
-    for (const item of items) {
-        for (let index = 0; index < item.repeat; index += 1) {
-            expanded.push(item.marker);
-        }
-    }
-
-    return [...expanded, STOP].join(",");
+    return serializeVerseOrder(
+        items.flatMap((item) => Array.from({ length: item.repeat }, () => item.marker))
+    );
 }
 
 export function buildAvailableMarkers(sections: SongFormData["sections"] = []): string[] {
@@ -40,7 +31,7 @@ export function buildAvailableMarkers(sections: SongFormData["sections"] = []): 
     const result: string[] = [];
 
     for (const section of sections) {
-        const marker = `${section.type}${section.number ? ` ${section.number}` : ""}`;
+        const marker = getSectionMarker(section);
         if (!seen.has(marker)) {
             seen.add(marker);
             result.push(marker);

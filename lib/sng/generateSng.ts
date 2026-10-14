@@ -1,20 +1,9 @@
+import { getSectionMarker, SECTION_SEPARATOR, SLIDE_SEPARATOR } from "./markers";
 import type { SongFormData, SongSection, SongMetadata } from "./types";
-
-/**
- * Baut den Vers-/Sektionsmarker für die erste Zeile eines Abschnitts.
- * Beispiele: "Vers 1", "Refrain", "Bridge", "Intro"
- */
-function buildMarker(section: SongSection): string {
-    const num = section.number?.trim();
-    if (num) {
-        return `${section.type} ${num}`;
-    }
-    return section.type;
-}
 
 function isExportSeparator(line: string): boolean {
     const trimmed = line.trim();
-    return trimmed === "--" || trimmed === "---";
+    return trimmed === SLIDE_SEPARATOR || trimmed === SECTION_SEPARATOR;
 }
 
 function pushSanitizedLine(outputLines: string[], nextLine: string) {
@@ -103,7 +92,7 @@ function buildSectionLines(section: SongSection, langCount: number): string[] {
     const lines: string[] = [];
 
     // Sektionsmarker als erste Zeile (SongBeamer-Tag)
-    lines.push(buildMarker(section));
+    lines.push(getSectionMarker(section));
 
     if (langCount === 1) {
         const text = section.texts[0] ?? "";
@@ -149,7 +138,7 @@ export function generateSng(data: SongFormData): string {
     buildHeaders(metadata).forEach((line) => pushSanitizedLine(outputLines, line));
 
     // 2. Trennzeile zwischen Header und Liedtext
-    pushSanitizedLine(outputLines, "---");
+    pushSanitizedLine(outputLines, SECTION_SEPARATOR);
 
     // 3. Sektionen
     for (let i = 0; i < sections.length; i++) {
@@ -158,17 +147,10 @@ export function generateSng(data: SongFormData): string {
 
         // Abschnittstrennzeichen --- nach jeder Sektion außer der letzten
         if (i < sections.length - 1) {
-            pushSanitizedLine(outputLines, "---");
+            pushSanitizedLine(outputLines, SECTION_SEPARATOR);
         }
     }
 
     // SongBeamer verwendet Windows-Zeilenenden (CRLF)
     return outputLines.join("\r\n");
-}
-
-/**
- * Erzeugt automatisch den #VerseOrder-Wert aus der aktuellen Sektionsliste.
- */
-export function generateVerseOrder(sections: SongSection[]): string {
-    return sections.map((s) => buildMarker(s)).join(",");
 }

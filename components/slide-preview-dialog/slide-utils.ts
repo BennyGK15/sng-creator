@@ -1,3 +1,9 @@
+import {
+    getSectionMarker,
+    parseVerseOrder,
+    SECTION_SEPARATOR,
+    SLIDE_SEPARATOR,
+} from "@/lib/sng/markers";
 import type { SongFormData, SongSection } from "@/lib/sng/types";
 
 import type { PreviewSlide } from "./types";
@@ -14,21 +20,13 @@ export function getLineGroupSpacing(index: number, langCount: number): number {
     return index % langCount === 0 ? 8 : 0;
 }
 
-function buildMarker(section: SongSection): string {
-    const number = section.number?.trim();
-    return number ? `${section.type} ${number}` : section.type;
-}
-
 function sectionSequence(data: SongFormData): SongSection[] {
     const byMarker = new Map<string, SongSection>();
     data.sections.forEach((section) => {
-        byMarker.set(buildMarker(section), section);
+        byMarker.set(getSectionMarker(section), section);
     });
 
-    const fromVerseOrder = (data.metadata.verseOrder || "")
-        .split(",")
-        .map((entry) => entry.trim())
-        .filter((entry) => entry.length > 0 && entry !== "STOP")
+    const fromVerseOrder = parseVerseOrder(data.metadata.verseOrder || "")
         .map((marker) => byMarker.get(marker))
         .filter((section): section is SongSection => Boolean(section));
 
@@ -63,7 +61,7 @@ function splitSlides(lines: string[]): string[][] {
 
     lines.forEach((line) => {
         const trimmed = line.trim();
-        if (trimmed === "---" || trimmed === "--") {
+        if (trimmed === SECTION_SEPARATOR || trimmed === SLIDE_SEPARATOR) {
             if (slides[slides.length - 1].length > 0) {
                 slides.push([]);
             }
@@ -85,7 +83,7 @@ export function buildSlides(data: SongFormData | null): PreviewSlide[] {
     const result: PreviewSlide[] = [];
 
     sequence.forEach((section) => {
-        const marker = buildMarker(section);
+        const marker = getSectionMarker(section);
         const interleaved = buildInterleavedLines(section, data.metadata.langCount);
         const slides = splitSlides(interleaved);
         const safeSlides = slides.length > 0 ? slides : [[""]];

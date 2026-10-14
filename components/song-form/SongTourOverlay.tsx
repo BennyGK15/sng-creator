@@ -25,12 +25,23 @@ export function SongTourOverlay({
         <div
             role="status"
             aria-live="polite"
-            className="bg-background/95 fixed right-4 bottom-20 z-60 w-[min(92vw,26rem)] rounded-lg border p-4 shadow-xl backdrop-blur sm:bottom-4"
+            className="bg-popover fixed right-4 bottom-24 z-60 w-[min(calc(100vw-2rem),26rem)] rounded-xl border p-4 shadow-xl"
         >
-            <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                Produkttour • Schritt {tourStepIndex + 1} von {TOUR_STEPS.length}
-            </p>
-            <h3 className="mt-1 text-lg font-semibold">{TOUR_STEPS[tourStepIndex].title}</h3>
+            <div className="flex items-center gap-3">
+                <div
+                    aria-hidden="true"
+                    className="bg-muted h-1 flex-1 overflow-hidden rounded-full"
+                >
+                    <div
+                        className="bg-primary h-full rounded-full transition-[width] duration-300"
+                        style={{ width: `${((tourStepIndex + 1) / TOUR_STEPS.length) * 100}%` }}
+                    />
+                </div>
+                <p className="text-muted-foreground text-xs tabular-nums">
+                    Schritt {tourStepIndex + 1} von {TOUR_STEPS.length}
+                </p>
+            </div>
+            <h3 className="mt-3 text-lg font-semibold">{TOUR_STEPS[tourStepIndex].title}</h3>
             <p className="text-muted-foreground mt-1 text-sm">
                 {TOUR_STEPS[tourStepIndex].description}
             </p>

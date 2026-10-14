@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { ChevronLeft, ChevronRight, MonitorPlay } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -14,16 +14,13 @@ import type { SlidePreviewDialogProps } from "./types";
 export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDialogProps) {
     const slides = useMemo(() => buildSlides(data), [data]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [shownSlides, setShownSlides] = useState(slides);
 
-    useEffect(() => {
-        if (!open) return;
-
-        const frame = window.requestAnimationFrame(() => {
-            setCurrentIndex(0);
-        });
-
-        return () => window.cancelAnimationFrame(frame);
-    }, [open, slides.length]);
+    // Bei neuen Daten (erneutes Öffnen) wieder bei der ersten Folie beginnen
+    if (slides !== shownSlides) {
+        setShownSlides(slides);
+        setCurrentIndex(0);
+    }
 
     const currentSlide = slides[currentIndex];
     const hasSlides = slides.length > 0;
@@ -36,9 +33,17 @@ export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDia
         setCurrentIndex((prev) => Math.min(slides.length - 1, prev + 1));
     }
 
+    function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+        if (event.key === "ArrowLeft") prevSlide();
+        if (event.key === "ArrowRight") nextSlide();
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:min-w-[min(50vw,48rem)]">
+            <DialogContent
+                onKeyDown={handleKeyDown}
+                className="flex max-h-[90vh] flex-col gap-0 overflow-hidden p-0 sm:min-w-[min(50vw,48rem)]"
+            >
                 <DialogHeader className="px-5 pt-5 pb-4">
                     <div className="flex items-center gap-2.5">
                         <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
@@ -75,8 +80,7 @@ export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDia
 
                 <div className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-muted-foreground text-xs">
-                        Grundlage: Abschnittsreihenfolge, Abspielreihenfolge und
-                        Sprach-Interleaving.
+                        Folgt der Abspielreihenfolge. Mit den Pfeiltasten blättern.
                     </p>
                     <div className="flex items-center gap-2">
                         <Button

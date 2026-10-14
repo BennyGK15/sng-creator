@@ -1,25 +1,22 @@
 "use client";
 
 import { useMemo } from "react";
-import { Controller, useWatch } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 
 import { buildSlides } from "@/components/slide-preview-dialog/slide-utils";
 import type { PreviewSlide } from "@/components/slide-preview-dialog/types";
 import { Label } from "@/components/ui/label";
+import { serializeVerseOrder } from "@/lib/sng/markers";
 import type { SongFormData } from "@/lib/sng/types";
 
 import { VerseOrderList } from "./VerseOrderList";
 import type { VerseOrderItem } from "./types";
 import { buildAvailableMarkers, parseOrder, serializeOrder } from "./utils";
 
-interface VerseOrderEditorProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    control: any;
-}
-
-export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
-    const sections = useWatch({ control, name: "sections" }) as SongFormData["sections"];
-    const langCount = (useWatch({ control, name: "metadata.langCount" }) as number) || 1;
+export function VerseOrderEditor() {
+    const { control } = useFormContext<SongFormData>();
+    const sections = useWatch({ control, name: "sections" });
+    const langCount = useWatch({ control, name: "metadata.langCount" }) || 1;
 
     const availableMarkers = useMemo(() => buildAvailableMarkers(sections), [sections]);
     const previewSlidesByMarker = useMemo<Record<string, PreviewSlide[]>>(() => {
@@ -29,7 +26,7 @@ export function VerseOrderEditor({ control }: VerseOrderEditorProps) {
             const previewData = {
                 metadata: {
                     langCount,
-                    verseOrder: `${marker},STOP`,
+                    verseOrder: serializeVerseOrder([marker]),
                 },
                 sections,
             } as SongFormData;
