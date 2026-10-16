@@ -1,8 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { createDefaultValues } from "@/components/song-form/utils";
 
 import { generateSng } from "../generateSng";
+import { generateId } from "../markers";
 import { decodeSngBytes, parseSng } from "../parseSng";
 import type { SongFormData, SongSection } from "../types";
 
@@ -19,6 +20,20 @@ function song(
 function roundTrip(data: SongFormData) {
     return parseSng(generateSng(data));
 }
+
+describe("generateId", () => {
+    it("verwendet sichere Zufallswerte für UUIDs im Fallback", () => {
+        vi.stubGlobal("crypto", {
+            getRandomValues: (bytes: Uint8Array) => bytes.fill(0),
+        });
+
+        try {
+            expect(generateId()).toBe("00000000-0000-4000-8000-000000000000");
+        } finally {
+            vi.unstubAllGlobals();
+        }
+    });
+});
 
 describe("generateSng", () => {
     it("schreibt Header, Marker und Abschnitte mit CRLF", () => {
