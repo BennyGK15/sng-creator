@@ -98,7 +98,6 @@ export function VerseOrderEditor() {
                             onRemoveItem={removeItem}
                             onReset={reset}
                             onAddAll={addAll}
-                            serializedOrder={serializeOrder(items)}
                         />
                     </div>
                 );

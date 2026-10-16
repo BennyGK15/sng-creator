@@ -18,7 +18,7 @@ import { ExportDialog } from "@/components/export-dialog";
 import { SlidePreviewDialog } from "@/components/slide-preview-dialog";
 import { Button } from "@/components/ui/button";
 import { generateSng } from "@/lib/sng/generateSng";
-import { decodeSngBytes, parseSng } from "@/lib/sng/parseSng";
+import { decodeSngBytes, DEFAULT_IMPORTED_LANGUAGE_NAMES, parseSng } from "@/lib/sng/parseSng";
 import type { SongFormData } from "@/lib/sng/types";
 
 import { SongActionBar } from "./SongActionBar";
@@ -35,6 +35,24 @@ import {
     newSection,
     reorderVerseOrderForSectionMove,
 } from "./utils";
+
+/** Hinweis nach dem Import, welche Sprachen automatisch erkannt wurden. */
+function describeImportedLanguages({ metadata }: SongFormData): string {
+    if (metadata.langCount <= 1) return " Du kannst das Lied jetzt bearbeiten.";
+
+    const names = [metadata.lang1, metadata.lang2, metadata.lang3].slice(0, metadata.langCount);
+    const recognized = names.filter(
+        (name, index) => name !== DEFAULT_IMPORTED_LANGUAGE_NAMES[index]
+    );
+
+    if (recognized.length === names.length) {
+        return ` Erkannte Sprachen: ${names.join(", ")}. Falls das nicht stimmt, kannst du die Namen unter „Lied-Infos“ ändern.`;
+    }
+    if (recognized.length > 0) {
+        return ` Erkannt: ${recognized.join(", ")}. Die übrigen Sprachnamen kannst du unter „Lied-Infos“ eintragen.`;
+    }
+    return " Die Sprachen konnten nicht erkannt werden – trage ihre Namen bei Bedarf unter „Lied-Infos“ ein.";
+}
 
 export function SongForm() {
     const [exportOpen, setExportOpen] = useState(false);
@@ -65,6 +83,7 @@ export function SongForm() {
         setValue,
         getValues,
         setFocus,
+        clearErrors,
         reset,
         formState: { errors, isDirty },
     } = methods;
@@ -177,7 +196,7 @@ export function SongForm() {
     function handleRestart() {
         if (
             !window.confirm(
-                "Alle aktuellen Eingaben werden verworfen und das Formular wird komplett zurückgesetzt. Möchtest du wirklich neu starten?"
+                "Mit einem neuen Lied beginnen? Alle bisherigen Eingaben gehen dabei verloren."
             )
         ) {
             return;
@@ -204,9 +223,7 @@ export function SongForm() {
 
         if (
             isDirty &&
-            !window.confirm(
-                "Der aktuelle Formularinhalt wird durch den Import ersetzt. Möchtest du fortfahren?"
-            )
+            !window.confirm("Das geöffnete Lied ersetzt deine bisherigen Eingaben. Fortfahren?")
         ) {
             event.target.value = "";
             return;
@@ -217,7 +234,7 @@ export function SongForm() {
 
         try {
             const content = decodeSngBytes(await file.arrayBuffer());
-            const importedData = parseSng(content);
+            const importedData = parseSng(content, { fileName: file.name });
             const structureSignature = importedData.sections
                 .map((section) => `${section.id}|${section.type}|${section.number}`)
                 .join("||");
@@ -231,7 +248,7 @@ export function SongForm() {
             setSngContent("");
             setImportState({
                 type: "success",
-                message: `${file.name} wurde importiert und kann jetzt weiterbearbeitet werden.`,
+                message: `„${file.name}“ wurde geöffnet.${describeImportedLanguages(importedData)}`,
             });
         } catch (error) {
             setImportState({
@@ -239,7 +256,7 @@ export function SongForm() {
                 message:
                     error instanceof Error
                         ? error.message
-                        : "Die Datei konnte nicht importiert werden.",
+                        : "Die Datei konnte nicht geöffnet werden.",
             });
         } finally {
             setIsImporting(false);
@@ -251,6 +268,20 @@ export function SongForm() {
         const previousCount = Number(getValues("metadata.langCount"));
 
         if (count < previousCount) {
+            const removedLanguageHasText = getValues("sections").some((section) =>
+                section.texts.slice(count).some((text) => text.trim().length > 0)
+            );
+            const removedName =
+                getValues(`metadata.lang${previousCount as 2 | 3}`) || "die Sprache";
+            if (
+                removedLanguageHasText &&
+                !window.confirm(
+                    `Der Liedtext auf ${removedName} wird dabei aus allen Abschnitten gelöscht. Sprache wirklich entfernen?`
+                )
+            ) {
+                return;
+            }
+
             if (previousCount >= 3 && count < 3) {
                 setValue("metadata.titleLang3", "", { shouldDirty: true });
             }
@@ -336,6 +367,16 @@ export function SongForm() {
         targetElement?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, [isTourRunning, tourStepIndex]);
 
+    // Hinweis „kein Liedtext“ ausblenden, sobald Text da ist – nicht erst beim nächsten Export
+    const sectionsRootError = errors.sections?.root?.message;
+    useEffect(() => {
+        if (!sectionsRootError) return;
+        const hasText = watchedSections?.some((section) =>
+            section.texts.some((text) => text.trim().length > 0)
+        );
+        if (hasText) clearErrors("sections");
+    }, [sectionsRootError, watchedSections, clearErrors]);
+
     // Warnt vor dem Neuladen oder Schließen des Tabs, solange ungespeicherte Eingaben existieren.
     useEffect(() => {
         if (!isDirty) return;
@@ -396,10 +437,9 @@ export function SongForm() {
                 />
 
                 <SongSectionsCard
+                    // Fehler der ganzen Liste (z. B. „kein Liedtext“) landen bei Feld-Arrays unter `root`
                     sectionsErrorMessage={
-                        errors.sections && !Array.isArray(errors.sections)
-                            ? errors.sections.message
-                            : undefined
+                        errors.sections?.root?.message ?? errors.sections?.message
                     }
                     fields={fields}
                     remove={remove}

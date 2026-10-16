@@ -28,13 +28,15 @@ Die Anwendung läuft vollständig im Browser. Es gibt kein Backend und keine ser
 - Automatische Nummerierung gleichartiger Abschnitte
 - Drag-and-drop-Sortierung der Abschnitte
 - Import bestehender `.sng`-Dateien (UTF-8 und ANSI/Windows-1252 älterer SongBeamer-Versionen) zur Weiterbearbeitung und Erweiterung um weitere Sprachen
+- Automatische Spracherkennung beim Import – anhand des Dateinamens und des Liedtexts, komplett offline ohne externe Dienste
 - Editor für die Abspielreihenfolge inklusive Wiederholungen, Vorschau beim Darüberfahren und automatischem `STOP`
 - Folienvorschau zur Kontrolle der späteren Darstellung, mit den Pfeiltasten durchblätterbar
-- Export als `.sng`, als `.txt` oder als beide Formate gleichzeitig, sowie Kopieren in die Zwischenablage
+- Export als `.sng` oder `.txt` sowie Kopieren in die Zwischenablage, mit kurzer Anleitung für die nächsten Schritte in SongBeamer
 - Automatisch abgeleitete Dateinamen auf Basis von Titel und Sprachkürzeln
 - Warnung vor dem Schließen oder Neuladen des Tabs, solange ungespeicherte Eingaben vorhanden sind
 - Helles und dunkles Farbschema, abhängig von der Systemeinstellung
-- Produkttour direkt in der Oberfläche
+- Anzeige der Folienanzahl je Abschnitt
+- Einfache, technikfreie Sprache in der Oberfläche und eine kurze Produkttour für Einsteiger
 
 ## Tech-Stack
 
@@ -101,13 +103,13 @@ pnpm format:check  # Formatierung prüfen
 
 ## Verwendung
 
-1. Optional über „.sng importieren“ eine bestehende Datei laden oder ein neues Lied anlegen.
+1. Ein neues Lied anlegen oder über „Lied öffnen“ eine bestehende `.sng`-Datei laden.
 2. Titel und optionale Metadaten prüfen oder ergänzen.
 3. Eine oder mehrere Sprachen festlegen beziehungsweise zusätzliche Sprachen hinzufügen.
 4. Liedabschnitte anlegen, anpassen oder bestehende Texte weiterbearbeiten. Eine Zeile mit `--` teilt einen Abschnitt auf mehrere Folien auf.
 5. Reihenfolge der Abschnitte im Tab Abspielreihenfolge prüfen oder anpassen.
 6. Optional die Folienvorschau öffnen.
-7. Die fertige Datei als `.sng`, `.txt` oder beide Formate gleichzeitig exportieren oder den Inhalt direkt in die Zwischenablage kopieren.
+7. Über „Datei erstellen“ die fertige `.sng`-Datei herunterladen (alternativ als `.txt` oder per Zwischenablage).
 
 ## Generiertes Ausgabeformat
 

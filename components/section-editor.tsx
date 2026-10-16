@@ -47,6 +47,15 @@ export function SectionEditor({
         control,
         name: `sections.${index}.number`,
     });
+    const texts = useWatch({ control, name: `sections.${index}.texts` });
+    // Anzahl Folien dieses Abschnitts (Zeilen mit „--“ beginnen eine neue Folie)
+    const slideCount = Math.max(
+        1,
+        ...(texts ?? []).map(
+            (text) =>
+                (text ?? "").split(/^\s*--\s*$/m).filter((part) => part.trim().length > 0).length
+        )
+    );
     const typeLabelId = `sections.${index}.type-label`;
     const typeTriggerId = `sections.${index}.type`;
 
@@ -131,7 +140,7 @@ export function SectionEditor({
                     </Select>
                     {sectionNumber && (
                         <span
-                            className="flex h-6 min-w-6 items-center justify-center rounded-md bg-(--section)/12 px-1.5 text-xs font-semibold text-(--section) tabular-nums"
+                            className="flex h-6 min-w-6 items-center justify-center rounded-md bg-(--section)/15 px-1.5 text-xs font-semibold tabular-nums"
                             title="Wird automatisch anhand der Abschnittsanzahl vergeben"
                         >
                             <span className="sr-only">Nummer </span>
@@ -139,7 +148,10 @@ export function SectionEditor({
                         </span>
                     )}
 
-                    <span className="flex-1" />
+                    <span className="text-muted-foreground hidden flex-1 pl-1 text-sm sm:inline">
+                        {slideCount === 1 ? "1 Folie" : `${slideCount} Folien`}
+                    </span>
+                    <span className="flex-1 sm:hidden" />
 
                     {/* Verschiebe-Buttons */}
                     <Button
@@ -198,7 +210,7 @@ export function SectionEditor({
                                     htmlFor={`sections.${index}.texts.${l}`}
                                     className={
                                         Number(langCount) > 1
-                                            ? "text-muted-foreground mb-1 block text-xs"
+                                            ? "text-muted-foreground mb-1 block text-sm"
                                             : "sr-only"
                                     }
                                 >

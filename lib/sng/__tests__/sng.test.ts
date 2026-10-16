@@ -121,7 +121,7 @@ describe("parseSng", () => {
     });
 
     it("meldet fehlenden Titel und fehlenden Liedtext", () => {
-        expect(() => parseSng("---\r\nVers\r\nText")).toThrow(/#Title/);
+        expect(() => parseSng("---\r\nVers\r\nText")).toThrow(/Liedtitel/);
         expect(() => parseSng("#Title=X\r\n---")).toThrow(/Liedtext/);
     });
 });
