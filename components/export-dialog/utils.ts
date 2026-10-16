@@ -57,15 +57,21 @@ export function downloadText(filename: string, sngContent: string) {
 }
 
 export async function copyToClipboard(content: string): Promise<void> {
-    try {
-        await navigator.clipboard.writeText(content);
-        return;
-    } catch {
-        const area = document.createElement("textarea");
-        area.value = content;
-        document.body.appendChild(area);
-        area.select();
-        document.execCommand("copy");
-        document.body.removeChild(area);
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(content);
+            return;
+        } catch {
+            // z. B. fehlende Berechtigung – unten mit dem Fallback weiter versuchen
+        }
     }
+
+    // `navigator.clipboard` fehlt ohne HTTPS (z. B. im lokalen Netz per HTTP).
+    // Dann bleibt nur das veraltete, aber überall unterstützte `execCommand`.
+    const area = document.createElement("textarea");
+    area.value = content;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy"); // NOSONAR
+    area.remove();
 }

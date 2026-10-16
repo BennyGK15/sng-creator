@@ -62,13 +62,13 @@ function splitSlides(lines: string[]): string[][] {
     lines.forEach((line) => {
         const trimmed = line.trim();
         if (trimmed === SECTION_SEPARATOR || trimmed === SLIDE_SEPARATOR) {
-            if (slides[slides.length - 1].length > 0) {
+            if (slides.at(-1)!.length > 0) {
                 slides.push([]);
             }
             return;
         }
 
-        slides[slides.length - 1].push(line);
+        slides.at(-1)!.push(line);
     });
 
     return slides

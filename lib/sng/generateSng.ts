@@ -7,7 +7,7 @@ function isExportSeparator(line: string): boolean {
 }
 
 function pushSanitizedLine(outputLines: string[], nextLine: string) {
-    const previousLine = outputLines[outputLines.length - 1];
+    const previousLine = outputLines.at(-1);
     if (
         previousLine !== undefined &&
         isExportSeparator(previousLine) &&
@@ -20,65 +20,54 @@ function pushSanitizedLine(outputLines: string[], nextLine: string) {
     outputLines.push(nextLine);
 }
 
+const EDITOR_NAME = "SongBeamer - Song Editor by Benjamin Esenwein";
+
 /**
  * Gibt alle Header-Zeilen in der SongBeamer-korrekten Reihenfolge zurück.
+ * Optionale Felder ohne Wert werden weggelassen.
  */
 function buildHeaders(meta: SongMetadata): string[] {
-    const h: string[] = [];
+    const optionalHeaders: Array<[key: string, value: string | undefined]> = [
+        // Titel
+        ["TitleLang2", meta.langCount >= 2 ? meta.titleLang2 : undefined],
+        ["TitleLang3", meta.langCount >= 3 ? meta.titleLang3 : undefined],
+        // Mehrsprachigkeit
+        ["LangCount", String(meta.langCount)],
+        // Copyright / Autoren
+        ["OriginalTitle", meta.originalTitle],
+        ["Author", meta.author],
+        ["Melody", meta.melody],
+        ["Translation", meta.translation],
+        ["Publisher", meta.publisher],
+        ["(c)", meta.publisher],
+        ["Rights", meta.rights],
+        ["CCLI", meta.ccli],
+        // Musikalisch
+        ["Key", meta.key],
+        ["Transpose", meta.transpose],
+        ["Tempo", meta.tempo],
+        // Kategorien / Suche
+        ["Categories", meta.categories?.join(",")],
+        ["Keywords", meta.keywords],
+        ["QuickFinder", meta.quickFinder],
+        // Reihenfolge
+        ["VerseOrder", meta.verseOrder],
+        // Referenzen
+        ["Bible", meta.bible],
+        ["Books", meta.books],
+        ["ChurchSongID", meta.churchSongId],
+        // Sonstiges
+        ["ID", meta.id],
+        ["Comments", meta.comments],
+        // Editor / Version (vom Editor gesetzt)
+        ["Editor", EDITOR_NAME],
+        ["Version", "3"],
+    ];
 
-    // --- Titel ---
-    h.push(`#Title=${meta.title}`);
-    if (meta.langCount >= 2 && meta.titleLang2) {
-        h.push(`#TitleLang2=${meta.titleLang2}`);
-    }
-    if (meta.langCount >= 3 && meta.titleLang3) {
-        h.push(`#TitleLang3=${meta.titleLang3}`);
-    }
-
-    // --- Mehrsprachigkeit ---
-    h.push(`#LangCount=${meta.langCount}`);
-
-    // --- Copyright / Autoren ---
-    if (meta.originalTitle) h.push(`#OriginalTitle=${meta.originalTitle}`);
-    if (meta.author) h.push(`#Author=${meta.author}`);
-    if (meta.melody) h.push(`#Melody=${meta.melody}`);
-    if (meta.translation) h.push(`#Translation=${meta.translation}`);
-    if (meta.publisher) {
-        h.push(`#Publisher=${meta.publisher}`);
-        h.push(`#(c)=${meta.publisher}`);
-    }
-    if (meta.rights) h.push(`#Rights=${meta.rights}`);
-    if (meta.ccli) h.push(`#CCLI=${meta.ccli}`);
-
-    // --- Musikalisch ---
-    if (meta.key) h.push(`#Key=${meta.key}`);
-    if (meta.transpose) h.push(`#Transpose=${meta.transpose}`);
-    if (meta.tempo) h.push(`#Tempo=${meta.tempo}`);
-
-    // --- Kategorien / Suche ---
-    if (meta.categories && meta.categories.length > 0) {
-        h.push(`#Categories=${meta.categories.join(",")}`);
-    }
-    if (meta.keywords) h.push(`#Keywords=${meta.keywords}`);
-    if (meta.quickFinder) h.push(`#QuickFinder=${meta.quickFinder}`);
-
-    // --- Reihenfolge ---
-    if (meta.verseOrder) h.push(`#VerseOrder=${meta.verseOrder}`);
-
-    // --- Referenzen ---
-    if (meta.bible) h.push(`#Bible=${meta.bible}`);
-    if (meta.books) h.push(`#Books=${meta.books}`);
-    if (meta.churchSongId) h.push(`#ChurchSongID=${meta.churchSongId}`);
-
-    // --- Sonstiges ---
-    if (meta.id) h.push(`#ID=${meta.id}`);
-    if (meta.comments) h.push(`#Comments=${meta.comments}`);
-
-    // --- Editor / Version (vom Editor gesetzt) ---
-    h.push(`#Editor=SongBeamer - Song Editor by Benjamin Esenwein`);
-    h.push(`#Version=3`);
-
-    return h;
+    return [
+        `#Title=${meta.title}`,
+        ...optionalHeaders.filter(([, value]) => value).map(([key, value]) => `#${key}=${value}`),
+    ];
 }
 
 /**
@@ -89,15 +78,11 @@ function buildHeaders(meta: SongMetadata): string[] {
  *   Zeile 1 Sprache 1 → Zeile 1 Sprache 2 → Zeile 2 Sprache 1 → Zeile 2 Sprache 2 …
  */
 function buildSectionLines(section: SongSection, langCount: number): string[] {
-    const lines: string[] = [];
-
     // Sektionsmarker als erste Zeile (SongBeamer-Tag)
-    lines.push(getSectionMarker(section));
+    const lines: string[] = [getSectionMarker(section)];
 
     if (langCount === 1) {
-        const text = section.texts[0] ?? "";
-        const textLines = text.split("\n");
-        lines.push(...textLines);
+        lines.push(...(section.texts[0] ?? "").split("\n"));
     } else {
         // Mehrsprachig: Zeilen verschränken
         const langLines: string[][] = [];

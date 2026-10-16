@@ -8,7 +8,11 @@ type SongActionBarProps = {
     getTourFocusClass: (selector: string) => string;
 };
 
-export function SongActionBar({ onRestart, onOpenPreview, getTourFocusClass }: SongActionBarProps) {
+export function SongActionBar({
+    onRestart,
+    onOpenPreview,
+    getTourFocusClass,
+}: Readonly<SongActionBarProps>) {
     return (
         <div className="bg-background/90 sticky bottom-3 z-40 flex items-center justify-between gap-2 rounded-xl border p-2 shadow-lg shadow-black/5 backdrop-blur sm:bottom-4">
             <Button

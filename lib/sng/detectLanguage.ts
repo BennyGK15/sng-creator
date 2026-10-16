@@ -359,12 +359,16 @@ const MIN_LEAD = 1.5;
 
 const WORD_SETS = LATIN_PROFILES.map((profile) => new Set(profile.words));
 
+function countMatches(text: string, pattern: RegExp): number {
+    return Array.from(text.matchAll(pattern)).length;
+}
+
 export function detectLanguage(text: string): string | null {
-    const letters = text.match(/\p{L}/gu)?.length ?? 0;
+    const letters = countMatches(text, /\p{L}/gu);
     if (letters === 0) return null;
 
     for (const script of SCRIPT_PROFILES) {
-        const count = text.match(script.pattern)?.length ?? 0;
+        const count = countMatches(text, script.pattern);
         if (count / letters >= 0.3) return script.refine?.(text) ?? script.name;
     }
 
@@ -374,7 +378,7 @@ export function detectLanguage(text: string): string | null {
         .filter(Boolean);
     const scores = LATIN_PROFILES.map((profile, index) => {
         const wordHits = tokens.filter((token) => WORD_SETS[index].has(token)).length;
-        const charHits = profile.chars ? (text.toLowerCase().match(profile.chars)?.length ?? 0) : 0;
+        const charHits = profile.chars ? countMatches(text.toLowerCase(), profile.chars) : 0;
         return { name: profile.name, score: wordHits + charHits * 0.5 };
     });
 
@@ -419,7 +423,7 @@ export function parseLanguagesFromFilename(
     fileName: string,
     langCount: number
 ): Array<string[] | null> | null {
-    const match = fileName.match(/_([A-Za-z]{2}(?:-[A-Za-z]{2}){1,2})\.(?:sng|txt)$/i);
+    const match = /_([a-z]{2}(?:-[a-z]{2}){1,2})\.(?:sng|txt)$/i.exec(fileName);
     if (!match) return null;
 
     const codes = match[1].toUpperCase().split("-");

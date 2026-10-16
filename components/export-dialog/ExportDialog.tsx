@@ -33,7 +33,7 @@ export function ExportDialog({
     songTitle,
     langCount,
     languages,
-}: ExportDialogProps) {
+}: Readonly<ExportDialogProps>) {
     const [feedback, setFeedback] = useState<Feedback>(null);
     const feedbackTimeoutRef = useRef<number | null>(null);
 

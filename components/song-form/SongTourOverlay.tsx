@@ -16,7 +16,7 @@ export function SongTourOverlay({
     onEndTour,
     onPrevTourStep,
     onNextTourStep,
-}: SongTourOverlayProps) {
+}: Readonly<SongTourOverlayProps>) {
     if (!isTourRunning) {
         return null;
     }

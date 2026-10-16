@@ -8,7 +8,11 @@ type SongHeaderProps = {
     onStartTour: () => void;
 };
 
-export function SongHeader({ isImporting, onOpenImportPicker, onStartTour }: SongHeaderProps) {
+export function SongHeader({
+    isImporting,
+    onOpenImportPicker,
+    onStartTour,
+}: Readonly<SongHeaderProps>) {
     return (
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3.5">

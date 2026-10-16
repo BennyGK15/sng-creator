@@ -11,7 +11,11 @@ import { FittedSlideFrame } from "./FittedSlideFrame";
 import { buildSlides } from "./slide-utils";
 import type { SlidePreviewDialogProps } from "./types";
 
-export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDialogProps) {
+export function SlidePreviewDialog({
+    open,
+    onOpenChange,
+    data,
+}: Readonly<SlidePreviewDialogProps>) {
     const slides = useMemo(() => buildSlides(data), [data]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [shownSlides, setShownSlides] = useState(slides);

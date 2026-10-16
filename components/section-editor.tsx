@@ -17,8 +17,20 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getSectionStyle } from "@/lib/sng/section-style";
-import { SECTION_TYPES, SECTION_TYPE_LABELS, type SongFormData } from "@/lib/sng/types";
+import { countSlides } from "@/lib/sng/markers";
+import {
+    SECTION_TYPES,
+    SECTION_TYPE_LABELS,
+    type SectionType,
+    type SongFormData,
+} from "@/lib/sng/types";
 import { cn } from "@/lib/utils";
+
+/** Bei Mehrsprachigkeit stehen die Textfelder nebeneinander. */
+const TEXT_GRID_BY_LANG_COUNT: Record<number, string> = {
+    2: "grid gap-3 sm:grid-cols-2",
+    3: "grid gap-3 sm:grid-cols-3",
+};
 
 interface SectionEditorProps {
     index: number;
@@ -34,7 +46,7 @@ export function SectionEditor({
     onRemove,
     onMoveUp,
     onMoveDown,
-}: SectionEditorProps) {
+}: Readonly<SectionEditorProps>) {
     const { getValues, setValue, control } = useFormContext<SongFormData>();
     const sectionId = useWatch({ control, name: `sections.${index}.id` });
     const langCount = useWatch({ control, name: "metadata.langCount" }) ?? 1;
@@ -49,13 +61,7 @@ export function SectionEditor({
     });
     const texts = useWatch({ control, name: `sections.${index}.texts` });
     // Anzahl Folien dieses Abschnitts (Zeilen mit „--“ beginnen eine neue Folie)
-    const slideCount = Math.max(
-        1,
-        ...(texts ?? []).map(
-            (text) =>
-                (text ?? "").split(/^\s*--\s*$/m).filter((part) => part.trim().length > 0).length
-        )
-    );
+    const slideCount = Math.max(1, ...(texts ?? []).map((text) => countSlides(text ?? "")));
     const typeLabelId = `sections.${index}.type-label`;
     const typeTriggerId = `sections.${index}.type`;
 
@@ -71,8 +77,9 @@ export function SectionEditor({
         position: "relative" as const,
     };
 
+    const typeLabel = SECTION_TYPE_LABELS[sectionType as SectionType] ?? sectionType;
     const label = sectionType
-        ? `${SECTION_TYPE_LABELS[sectionType as keyof typeof SECTION_TYPE_LABELS] ?? sectionType}${sectionNumber ? ` ${sectionNumber}` : ""}`
+        ? [typeLabel, sectionNumber].filter(Boolean).join(" ")
         : `Abschnitt ${index + 1}`;
 
     const handleTypeChange = useCallback(
@@ -195,15 +202,7 @@ export function SectionEditor({
 
                 <CardContent className="px-3 pb-3">
                     {/* Textfelder — bei Mehrsprachigkeit nebeneinander */}
-                    <div
-                        className={
-                            Number(langCount) === 3
-                                ? "grid gap-3 sm:grid-cols-3"
-                                : Number(langCount) === 2
-                                  ? "grid gap-3 sm:grid-cols-2"
-                                  : ""
-                        }
-                    >
+                    <div className={TEXT_GRID_BY_LANG_COUNT[Number(langCount)] ?? ""}>
                         {Array.from({ length: Math.max(Number(langCount), 1) }, (_, l) => (
                             <div key={l}>
                                 <Label
