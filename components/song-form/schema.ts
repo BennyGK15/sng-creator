@@ -40,5 +40,11 @@ export const metadataSchema = z.object({
 
 export const formSchema = z.object({
     metadata: metadataSchema,
-    sections: z.array(sectionSchema).min(1, "Mindestens ein Abschnitt ist erforderlich"),
+    sections: z
+        .array(sectionSchema)
+        .min(1, "Lege mindestens einen Abschnitt an.")
+        .refine(
+            (sections) => sections.some((section) => section.texts.some((text) => text.trim())),
+            "Bitte gib zuerst einen Liedtext ein – mindestens ein Abschnitt braucht Text."
+        ),
 });

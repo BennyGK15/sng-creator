@@ -54,36 +54,39 @@
 }
 
 /*
- * Palette: neutral, slightly cool greys with a deep "hymnal green" as the
- * single brand accent. Section colours mark the song structure (verse,
- * chorus, bridge, intro/outro, instrumental) consistently across the editor.
+ * Palette angelehnt an die übrigen Credo-Seiten (dascredo.de, freizeiten.dascredo.de,
+ * terminexport.dascredo.de): Türkis #24ced8 als Akzent, dunkles Petrol als Schrift,
+ * kühles Hellgrau als Fläche. Türkis ist hell – darauf steht deshalb dunkle Schrift,
+ * und als Textfarbe auf Weiß dient das dunklere Petrol (accent-foreground).
+ * Die Abschnittsfarben markieren die Liedstruktur (Strophe, Refrain, Bridge,
+ * Intro/Outro, Instrumental) überall im Editor einheitlich.
  */
 :root {
-    --canvas: oklch(0.972 0.004 250);
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.2 0.015 260);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.2 0.015 260);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.2 0.015 260);
-    --primary: oklch(0.44 0.085 165);
-    --primary-foreground: oklch(0.985 0.005 165);
-    --secondary: oklch(0.955 0.012 165);
-    --secondary-foreground: oklch(0.32 0.06 165);
-    --muted: oklch(0.962 0.004 250);
-    --muted-foreground: oklch(0.5 0.015 260);
-    --accent: oklch(0.955 0.012 165);
-    --accent-foreground: oklch(0.32 0.06 165);
-    --destructive: oklch(0.56 0.2 27);
-    --success: oklch(0.52 0.12 155);
-    --border: oklch(0.91 0.006 250);
-    --input: oklch(0.88 0.008 250);
-    --ring: oklch(0.6 0.08 165);
-    --section-verse: oklch(0.58 0.13 250);
-    --section-chorus: oklch(0.55 0.11 165);
-    --section-bridge: oklch(0.68 0.14 65);
-    --section-frame: oklch(0.6 0.02 260);
-    --section-instrumental: oklch(0.56 0.15 305);
+    --canvas: #f1f5f8;
+    --background: #ffffff;
+    --foreground: #12353b;
+    --card: #ffffff;
+    --card-foreground: #12353b;
+    --popover: #ffffff;
+    --popover-foreground: #12353b;
+    --primary: #24ced8;
+    --primary-foreground: #05363b;
+    --secondary: #e8fbfc;
+    --secondary-foreground: #0f4d54;
+    --muted: #eaf0f3;
+    --muted-foreground: #4e6b71;
+    --accent: #e8fbfc;
+    --accent-foreground: #0f4d54;
+    --destructive: #c84747;
+    --success: #1a7a50;
+    --border: #12353b1f;
+    --input: #12353b33;
+    --ring: #24ced8;
+    --section-verse: #3f6fd8;
+    --section-chorus: #1cb3bc;
+    --section-bridge: #e0a020;
+    --section-frame: #6f8d93;
+    --section-instrumental: #8b5cd6;
     --chart-1: oklch(0.809 0.105 251.813);
     --chart-2: oklch(0.623 0.214 259.815);
     --chart-3: oklch(0.546 0.245 262.881);
@@ -100,34 +103,35 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* Dunkles Schema wie bei terminexport.dascredo.de: neutrale Flächen, Türkis bleibt Akzent. */
 @media (prefers-color-scheme: dark) {
     :root {
         color-scheme: dark;
-        --canvas: oklch(0.16 0.008 260);
-        --background: oklch(0.2 0.01 260);
-        --foreground: oklch(0.96 0.005 260);
-        --card: oklch(0.2 0.01 260);
-        --card-foreground: oklch(0.96 0.005 260);
-        --popover: oklch(0.23 0.01 260);
-        --popover-foreground: oklch(0.96 0.005 260);
-        --primary: oklch(0.72 0.11 165);
-        --primary-foreground: oklch(0.2 0.03 165);
-        --secondary: oklch(0.28 0.03 165);
-        --secondary-foreground: oklch(0.9 0.04 165);
-        --muted: oklch(0.25 0.01 260);
-        --muted-foreground: oklch(0.7 0.012 260);
-        --accent: oklch(0.28 0.03 165);
-        --accent-foreground: oklch(0.9 0.04 165);
-        --destructive: oklch(0.7 0.17 25);
-        --success: oklch(0.74 0.13 155);
-        --border: oklch(1 0 0 / 10%);
-        --input: oklch(1 0 0 / 16%);
-        --ring: oklch(0.6 0.09 165);
-        --section-verse: oklch(0.7 0.12 250);
-        --section-chorus: oklch(0.72 0.11 165);
-        --section-bridge: oklch(0.78 0.13 70);
-        --section-frame: oklch(0.68 0.02 260);
-        --section-instrumental: oklch(0.7 0.13 305);
+        --canvas: #0a0a0a;
+        --background: #171717;
+        --foreground: #fafafa;
+        --card: #171717;
+        --card-foreground: #fafafa;
+        --popover: #1f1f1f;
+        --popover-foreground: #fafafa;
+        --primary: #24ced8;
+        --primary-foreground: #05363b;
+        --secondary: #10393d;
+        --secondary-foreground: #b6f1f4;
+        --muted: #262626;
+        --muted-foreground: #a1a1a1;
+        --accent: #10393d;
+        --accent-foreground: #b6f1f4;
+        --destructive: #ff6568;
+        --success: #4ade94;
+        --border: #ffffff1a;
+        --input: #ffffff26;
+        --ring: #24ced8;
+        --section-verse: #7aa2ff;
+        --section-chorus: #24ced8;
+        --section-bridge: #f5c04a;
+        --section-frame: #90a8ad;
+        --section-instrumental: #b49bff;
     }
 }
 

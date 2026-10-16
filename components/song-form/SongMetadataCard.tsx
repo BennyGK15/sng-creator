@@ -5,7 +5,7 @@ import { Minus, Plus } from "lucide-react";
 import { VerseOrderEditor } from "@/components/verse-order-editor";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -57,7 +57,10 @@ export function SongMetadataCard({
     return (
         <Card id="tour-metadata-card" className={getTourFocusClass("#tour-metadata-card")}>
             <CardHeader>
-                <CardTitle>Metadaten</CardTitle>
+                <CardTitle>Lied-Infos</CardTitle>
+                <CardDescription>
+                    Nur der Titel ist Pflicht – alle anderen Angaben sind freiwillig.
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -143,103 +146,120 @@ export function SongMetadataCard({
                             </div>
 
                             <div className="sm:col-span-2">
-                                <Label htmlFor="lang1">Sprachen und Titel</Label>
-                                <div className="mt-1 space-y-2">
-                                    <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
-                                                1
-                                            </span>
-                                            <Input
-                                                id="lang1"
-                                                {...register("metadata.lang1")}
-                                                placeholder="Sprache 1 (z.B. Deutsch)"
-                                                className="h-8 flex-1 text-sm"
-                                            />
-                                        </div>
-                                        <Input
-                                            aria-label="Titel in Sprache 1"
-                                            value={watchedTitle}
-                                            onChange={(event) =>
-                                                setValue("metadata.title", event.target.value, {
-                                                    shouldDirty: true,
-                                                })
-                                            }
-                                            placeholder="Titel (wie oben) …"
-                                            className="h-8 text-sm"
-                                        />
-                                    </div>
-
-                                    {langCount >= 2 && (
-                                        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
-                                                    2
-                                                </span>
+                                {langCount > 1 ? (
+                                    <>
+                                        <Label htmlFor="lang1">Sprachen und Titel</Label>
+                                        <p className="text-muted-foreground text-sm">
+                                            Alle Sprachen erscheinen gemeinsam auf einer Folie.
+                                        </p>
+                                        <div className="mt-2 space-y-2">
+                                            <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
+                                                        1
+                                                    </span>
+                                                    <Input
+                                                        id="lang1"
+                                                        {...register("metadata.lang1")}
+                                                        placeholder="Sprache 1 (z.B. Deutsch)"
+                                                        className="h-8 flex-1 text-sm"
+                                                    />
+                                                </div>
                                                 <Input
-                                                    id="lang2"
-                                                    {...register("metadata.lang2")}
-                                                    placeholder="Sprache 2 (z.B. Englisch)"
-                                                    className="h-8 flex-1 text-sm"
+                                                    aria-label="Titel in Sprache 1"
+                                                    value={watchedTitle}
+                                                    onChange={(event) =>
+                                                        setValue(
+                                                            "metadata.title",
+                                                            event.target.value,
+                                                            {
+                                                                shouldDirty: true,
+                                                            }
+                                                        )
+                                                    }
+                                                    placeholder="Titel (wie oben) …"
+                                                    className="h-8 text-sm"
                                                 />
                                             </div>
-                                            <Input
-                                                id="titleLang2"
-                                                {...register("metadata.titleLang2")}
-                                                placeholder={`Titel auf ${watchedLang2} …`}
-                                                className="h-8 text-sm"
-                                            />
-                                        </div>
-                                    )}
 
-                                    {langCount >= 3 && (
-                                        <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
-                                                    3
-                                                </span>
-                                                <Input
-                                                    id="lang3"
-                                                    {...register("metadata.lang3")}
-                                                    placeholder="Sprache 3"
-                                                    className="h-8 flex-1 text-sm"
-                                                />
-                                            </div>
-                                            <Input
-                                                id="titleLang3"
-                                                {...register("metadata.titleLang3")}
-                                                placeholder={`Titel auf ${watchedLang3} …`}
-                                                className="h-8 text-sm"
-                                            />
-                                        </div>
-                                    )}
+                                            {langCount >= 2 && (
+                                                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
+                                                            2
+                                                        </span>
+                                                        <Input
+                                                            id="lang2"
+                                                            {...register("metadata.lang2")}
+                                                            placeholder="Sprache 2 (z.B. Englisch)"
+                                                            className="h-8 flex-1 text-sm"
+                                                        />
+                                                    </div>
+                                                    <Input
+                                                        id="titleLang2"
+                                                        {...register("metadata.titleLang2")}
+                                                        placeholder={`Titel auf ${watchedLang2} …`}
+                                                        className="h-8 text-sm"
+                                                    />
+                                                </div>
+                                            )}
 
-                                    <div className="flex gap-2 pt-1">
-                                        {langCount < 3 && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => onLangCountChange(langCount + 1)}
-                                                className="text-primary hover:text-primary"
-                                            >
-                                                <Plus />
-                                                Sprache hinzufügen
-                                            </Button>
-                                        )}
-                                        {langCount > 1 && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => onLangCountChange(langCount - 1)}
-                                                className="text-muted-foreground hover:text-destructive"
-                                            >
-                                                <Minus />
-                                                Sprache entfernen
-                                            </Button>
-                                        )}
-                                    </div>
+                                            {langCount >= 3 && (
+                                                <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-muted-foreground bg-muted w-6 shrink-0 rounded px-1 py-0.5 text-center text-xs font-semibold">
+                                                            3
+                                                        </span>
+                                                        <Input
+                                                            id="lang3"
+                                                            {...register("metadata.lang3")}
+                                                            placeholder="Sprache 3"
+                                                            className="h-8 flex-1 text-sm"
+                                                        />
+                                                    </div>
+                                                    <Input
+                                                        id="titleLang3"
+                                                        {...register("metadata.titleLang3")}
+                                                        placeholder={`Titel auf ${watchedLang3} …`}
+                                                        className="h-8 text-sm"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <p className="text-muted-foreground text-sm">
+                                        Soll das Lied zweisprachig auf den Folien stehen (z. B.
+                                        Deutsch und Englisch)? Dann füge eine weitere Sprache hinzu.
+                                    </p>
+                                )}
+                                <div className="mt-1 flex flex-wrap gap-2">
+                                    {langCount < 3 && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => onLangCountChange(langCount + 1)}
+                                            className="text-accent-foreground hover:text-accent-foreground -ml-2.5"
+                                        >
+                                            <Plus />
+                                            {langCount === 1
+                                                ? "Weitere Sprache hinzufügen"
+                                                : "Noch eine Sprache hinzufügen"}
+                                        </Button>
+                                    )}
+                                    {langCount > 1 && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => onLangCountChange(langCount - 1)}
+                                            className="text-muted-foreground hover:text-destructive"
+                                        >
+                                            <Minus />
+                                            Letzte Sprache entfernen
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                             <div>

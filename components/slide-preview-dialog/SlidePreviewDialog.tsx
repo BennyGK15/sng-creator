@@ -46,8 +46,8 @@ export function SlidePreviewDialog({ open, onOpenChange, data }: SlidePreviewDia
             >
                 <DialogHeader className="px-5 pt-5 pb-4">
                     <div className="flex items-center gap-2.5">
-                        <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-lg">
-                            <MonitorPlay className="text-primary h-4.5 w-4.5" />
+                        <div className="bg-accent flex h-9 w-9 items-center justify-center rounded-lg">
+                            <MonitorPlay className="text-accent-foreground h-4.5 w-4.5" />
                         </div>
                         <div>
                             <DialogTitle>Folienvorschau</DialogTitle>

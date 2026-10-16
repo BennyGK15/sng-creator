@@ -51,7 +51,7 @@ export function SongSectionsCard({
                     Eine Zeile mit <kbd className="bg-muted rounded px-1 text-xs">--</kbd> teilt
                     einen Abschnitt auf mehrere Folien auf.
                     {langCount > 1 &&
-                        " Zeilen mit gleicher Nummer gehören zusammen – die Sprachen werden im Export zeilenweise verschränkt."}
+                        " Zeilen mit gleicher Nummer gehören zusammen und stehen auf der Folie direkt untereinander."}
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">

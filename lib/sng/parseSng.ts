@@ -1,3 +1,4 @@
+import { detectSongLanguages } from "./detectLanguage";
 import {
     generateId,
     getSectionMarker,
@@ -40,7 +41,7 @@ const SECTION_MARKER_PATTERNS = SECTION_TYPE_ALIASES.flatMap(({ type, aliases })
     }))
 ).sort((a, b) => b.normalizedAlias.length - a.normalizedAlias.length);
 
-const DEFAULT_IMPORTED_LANGUAGE_NAMES = ["Sprache 1", "Sprache 2", "Sprache 3"] as const;
+export const DEFAULT_IMPORTED_LANGUAGE_NAMES = ["Sprache 1", "Sprache 2", "Sprache 3"] as const;
 
 type ParsedHeaders = Partial<Record<string, string>>;
 
@@ -276,7 +277,25 @@ export function decodeSngBytes(bytes: ArrayBuffer): string {
     }
 }
 
-export function parseSng(content: string): SongFormData {
+/** Setzt die Sprachnamen anhand von Dateiname und Liedtext (offline erkannt). */
+function applyDetectedLanguages(
+    metadata: SongMetadata,
+    sections: SongSection[],
+    fileName?: string
+) {
+    const titles = [metadata.title, metadata.titleLang2, metadata.titleLang3];
+    const textsByLanguage = Array.from({ length: metadata.langCount }, (_, index) =>
+        [titles[index], ...sections.map((section) => section.texts[index] ?? "")].join("\n")
+    );
+
+    detectSongLanguages(textsByLanguage, fileName).forEach((name, index) => {
+        if (!name) return;
+        const key = (["lang1", "lang2", "lang3"] as const)[index];
+        metadata[key] = name;
+    });
+}
+
+export function parseSng(content: string, options: { fileName?: string } = {}): SongFormData {
     const normalized = normalizeInput(content);
     const lines = normalized.split("\n");
     const { headerLines, bodyLines } = splitHeaderAndBody(lines);
@@ -284,13 +303,16 @@ export function parseSng(content: string): SongFormData {
     const metadata = toMetadata(headers);
     const sections = parseSections(bodyLines, metadata.langCount);
     metadata.verseOrder = normalizeVerseOrder(metadata.verseOrder, sections);
+    applyDetectedLanguages(metadata, sections, options.fileName);
 
     if (!metadata.title.trim()) {
-        throw new Error("Die Datei enthält keinen #Title-Header.");
+        throw new Error(
+            "In der Datei wurde kein Liedtitel gefunden. Ist es eine SongBeamer-Datei (.sng)?"
+        );
     }
 
     if (sections.length === 0) {
-        throw new Error("Die Datei enthält keine importierbaren Liedtext-Abschnitte.");
+        throw new Error("In der Datei wurde kein Liedtext gefunden.");
     }
 
     return {

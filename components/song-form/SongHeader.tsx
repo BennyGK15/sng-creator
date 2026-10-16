@@ -32,9 +32,10 @@ export function SongHeader({ isImporting, onOpenImportPicker, onStartTour }: Son
                     variant="outline"
                     onClick={onOpenImportPicker}
                     disabled={isImporting}
+                    title="Eine vorhandene SongBeamer-Datei (.sng) laden und weiterbearbeiten"
                 >
                     <FileUp />
-                    {isImporting ? "Import läuft …" : ".sng importieren"}
+                    {isImporting ? "Wird geöffnet …" : "Lied öffnen"}
                 </Button>
                 <Button type="button" variant="ghost" onClick={onStartTour}>
                     <Compass />

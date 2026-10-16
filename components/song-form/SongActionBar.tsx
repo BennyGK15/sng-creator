@@ -1,4 +1,4 @@
-import { FileDown, MonitorPlay, RotateCcw } from "lucide-react";
+import { FileDown, FilePlus, MonitorPlay } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -17,11 +17,11 @@ export function SongActionBar({ onRestart, onOpenPreview, getTourFocusClass }: S
                 size="lg"
                 onClick={onRestart}
                 className="text-muted-foreground hover:text-destructive"
-                title="Setzt das Formular nach Bestätigung komplett zurück"
+                title="Alle Eingaben verwerfen und mit einem neuen Lied beginnen"
             >
-                <RotateCcw />
-                <span className="hidden sm:inline">Neu starten</span>
-                <span className="sr-only sm:hidden">Neu starten</span>
+                <FilePlus />
+                <span className="hidden sm:inline">Neues Lied</span>
+                <span className="sr-only sm:hidden">Neues Lied</span>
             </Button>
 
             <div className="flex gap-2">
@@ -43,7 +43,7 @@ export function SongActionBar({ onRestart, onOpenPreview, getTourFocusClass }: S
                     className={`px-4 ${getTourFocusClass("#tour-export-btn")}`}
                 >
                     <FileDown />
-                    Exportieren
+                    Datei erstellen
                 </Button>
             </div>
         </div>

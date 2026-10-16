@@ -23,7 +23,6 @@ type VerseOrderListProps = {
     onRemoveItem: (index: number) => void;
     onReset: () => void;
     onAddAll: () => void;
-    serializedOrder: string;
 };
 
 function markerStyle(marker: string) {
@@ -41,7 +40,6 @@ export function VerseOrderList({
     onRemoveItem,
     onReset,
     onAddAll,
-    serializedOrder,
 }: VerseOrderListProps) {
     const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
     const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
@@ -298,17 +296,14 @@ export function VerseOrderList({
                         </span>
                         <span className="bg-muted flex h-7 flex-1 items-center gap-2 rounded-md px-2 text-sm font-medium">
                             <Lock className="h-3 w-3" />
-                            STOP
+                            Liedende
                         </span>
-                        <span className="text-muted-foreground pr-1 text-xs">immer am Ende</span>
+                        <span className="text-muted-foreground pr-1 text-xs">
+                            wird automatisch gesetzt
+                        </span>
                     </li>
                 </ol>
             </div>
-
-            <p className="text-muted-foreground text-xs">
-                In der Datei gespeichert als:{" "}
-                <code className="bg-muted rounded px-1 py-0.5 break-all">{serializedOrder}</code>
-            </p>
         </>
     );
 }
