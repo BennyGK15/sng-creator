@@ -44,6 +44,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Fails early with a clear message instead of an HTTP 403 from SonarCloud.
+      # GitHub does not pass repository secrets to pull requests from forks or Dependabot.
+      - name: Check SONAR_TOKEN
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ]; then
+            echo "::error title=SONAR_TOKEN fehlt::Das Secret SONAR_TOKEN ist in diesem Lauf leer. Entweder ist es nicht unter Settings > Secrets and variables > Actions hinterlegt, oder der Lauf stammt aus einem Fork- bzw. Dependabot-PR, an den GitHub keine Secrets weitergibt."
+            exit 1
+          fi
+          echo "SONAR_TOKEN ist gesetzt. Schlägt die Analyse trotzdem mit HTTP 403 fehl, ist der Token abgelaufen oder hat keine Analyse-Rechte."
+
       - name: Checkout
         # actions/checkout@v7.0.1
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
