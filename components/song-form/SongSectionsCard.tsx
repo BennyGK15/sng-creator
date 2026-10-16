@@ -42,7 +42,7 @@ export function SongSectionsCard({
     onAddSection,
     langCount,
     getTourFocusClass,
-}: SongSectionsCardProps) {
+}: Readonly<SongSectionsCardProps>) {
     return (
         <Card id="tour-sections-card" className={getTourFocusClass("#tour-sections-card")}>
             <CardHeader>

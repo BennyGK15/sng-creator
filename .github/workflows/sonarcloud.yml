@@ -63,6 +63,27 @@ jobs:
           # Full history so SonarCloud can attribute issues and detect new code correctly
           fetch-depth: 0
 
+      - name: Setup pnpm
+        # pnpm/action-setup@v6.1.0
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
+        with:
+          version: 12.11.2
+
+      - name: Setup Node.js
+        # actions/setup-node@v7.1.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Writes coverage/lcov.info, which SonarCloud reads (see sonar-project.properties).
+      # Without it the quality gate fails with 0 % coverage on new code.
+      - name: Run tests with coverage
+        run: pnpm test:coverage
+
       - name: Analyze with SonarCloud
 
         # You can pin the exact commit or the version.

@@ -30,7 +30,7 @@ export function SongMetadataCard({
     setActiveTab,
     onLangCountChange,
     getTourFocusClass,
-}: SongMetadataCardProps) {
+}: Readonly<SongMetadataCardProps>) {
     const {
         register,
         control,

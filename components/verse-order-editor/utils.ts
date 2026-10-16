@@ -8,8 +8,8 @@ export function parseOrder(raw: string): VerseOrderItem[] {
     const result: VerseOrderItem[] = [];
 
     for (const marker of tokens) {
-        const last = result[result.length - 1];
-        if (last && last.marker === marker && last.repeat < MAX_REPEAT) {
+        const last = result.at(-1);
+        if (last?.marker === marker && last.repeat < MAX_REPEAT) {
             last.repeat = (last.repeat + 1) as 1 | 2 | 3;
             continue;
         }

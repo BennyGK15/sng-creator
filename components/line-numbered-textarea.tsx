@@ -34,12 +34,13 @@ function LineNumberedTextarea({ className, value = "", rows = 6, onScroll, ref, 
         if (!ta || !mirror) return;
 
         const cs = window.getComputedStyle(ta);
-        const computedLH = parseFloat(cs.lineHeight);
-        const resolvedLH = isNaN(computedLH) || computedLH < 1 ? 20 : computedLH;
+        const computedLH = Number.parseFloat(cs.lineHeight);
+        const resolvedLH = Number.isNaN(computedLH) || computedLH < 1 ? 20 : computedLH;
         setLh(resolvedLH);
 
         // Mirror must have the same inner width as the textarea content area
-        const innerW = ta.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        const innerW =
+            ta.clientWidth - Number.parseFloat(cs.paddingLeft) - Number.parseFloat(cs.paddingRight);
         mirror.style.width = `${Math.max(0, innerW)}px`;
         mirror.style.fontFamily = cs.fontFamily;
         mirror.style.fontSize = cs.fontSize;
@@ -120,7 +121,8 @@ function LineNumberedTextarea({ className, value = "", rows = 6, onScroll, ref, 
                 >
                     {lineNums.map((num, i) => (
                         <div
-                            key={i}
+                            // Die Zeilenposition ist hier die Identität: Zeilen werden nie umsortiert.
+                            key={i} // NOSONAR
                             className="text-muted-foreground/60 pr-2 text-right font-mono tabular-nums"
                             style={{
                                 height: lh,

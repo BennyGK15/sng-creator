@@ -87,7 +87,7 @@ export default function DatenschutzPage() {
                             <strong className="text-foreground">
                                 keine Eingabedaten an einen Server übermittelt
                             </strong>
-                            , gespeichert oder an Dritte weitergegeben.
+                            {", gespeichert oder an Dritte weitergegeben."}
                         </p>
                         <p>
                             Die Anwendung verwendet keine Cookies, keine lokale Browser-Speicherung
@@ -182,8 +182,8 @@ export default function DatenschutzPage() {
                             >
                                 {legalConfig.websiteLabel}
                             </a>
-                            . Für die Inhalte und Datenschutzpraktiken dieser externen Seiten ist
-                            der jeweilige Anbieter verantwortlich. Beim Anklicken eines externen
+                            {". "}Für die Inhalte und Datenschutzpraktiken dieser externen Seiten
+                            ist der jeweilige Anbieter verantwortlich. Beim Anklicken eines externen
                             Links kann Ihre IP-Adresse an den jeweiligen Anbieter übermittelt
                             werden.
                         </p>

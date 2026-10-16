@@ -35,7 +35,11 @@ export function getSectionFamily(type: string | undefined): SectionFamily {
 
 /** Leitet den Abschnittstyp aus einem Marker wie „Vers 2“ ab. */
 export function getSectionTypeFromMarker(marker: string): string {
-    const type = marker.replace(/\s+\d+$/, "");
+    // Nummer am Ende abtrennen, ohne Regex mit Backtracking-Risiko
+    const lastSpace = marker.lastIndexOf(" ");
+    const suffix = marker.slice(lastSpace + 1);
+    const type =
+        lastSpace > 0 && /^\d+$/.test(suffix) ? marker.slice(0, lastSpace).trimEnd() : marker;
     return (SECTION_TYPES as readonly string[]).includes(type) ? type : "Unbekannt";
 }
 

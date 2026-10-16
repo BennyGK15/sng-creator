@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { getLanguageScale, getLineGroupSpacing } from "./slide-utils";
 import type { FittedSlideFrameProps, PreviewSlide } from "./types";
 
-export function FittedSlideFrame({ slide, slides, langCount }: FittedSlideFrameProps) {
+export function FittedSlideFrame({ slide, slides, langCount }: Readonly<FittedSlideFrameProps>) {
     const textViewportRef = useRef<HTMLDivElement>(null);
     const measureHostRef = useRef<HTMLDivElement>(null);
     const [baseFontSize, setBaseFontSize] = useState(44);

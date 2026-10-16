@@ -40,7 +40,7 @@ export function VerseOrderList({
     onRemoveItem,
     onReset,
     onAddAll,
-}: VerseOrderListProps) {
+}: Readonly<VerseOrderListProps>) {
     const [hoveredMarker, setHoveredMarker] = useState<string | null>(null);
     const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
     const closeTimeoutRef = useRef<number | null>(null);
@@ -228,11 +228,10 @@ export function VerseOrderList({
                                 />
                                 {item.marker}
                             </span>
-                            <span
-                                role="group"
-                                aria-label={`Wiederholungen für ${item.marker}`}
-                                className="inline-flex items-center overflow-hidden rounded-md border"
-                            >
+                            <fieldset className="inline-flex items-center overflow-hidden rounded-md border">
+                                <legend className="sr-only">
+                                    Wiederholungen für {item.marker}
+                                </legend>
                                 {[1, 2, 3].map((count) => (
                                     <button
                                         key={count}
@@ -251,7 +250,7 @@ export function VerseOrderList({
                                         {count}×
                                     </button>
                                 ))}
-                            </span>
+                            </fieldset>
                             <Button
                                 type="button"
                                 variant="ghost"

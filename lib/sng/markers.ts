@@ -18,6 +18,28 @@ export function getSectionMarker(section: Pick<SongSection, "type" | "number">):
     return number ? `${section.type} ${number}` : section.type;
 }
 
+/**
+ * Zählt die Folien eines Abschnittstexts: Zeilen mit `--` (oder `---`) beginnen
+ * eine neue Folie, leere Folien zählen nicht. Ein leerer Text ergibt eine Folie.
+ */
+export function countSlides(text: string): number {
+    let slides = 0;
+    let currentHasText = false;
+
+    for (const line of text.split("\n")) {
+        const trimmed = line.trim();
+        if (trimmed === SLIDE_SEPARATOR || trimmed === SECTION_SEPARATOR) {
+            if (currentHasText) slides += 1;
+            currentHasText = false;
+        } else if (trimmed.length > 0) {
+            currentHasText = true;
+        }
+    }
+    if (currentHasText) slides += 1;
+
+    return Math.max(slides, 1);
+}
+
 /** Zerlegt einen `#VerseOrder`-Wert in seine Marker (ohne `STOP`). */
 export function parseVerseOrder(raw: string): string[] {
     return raw
@@ -40,7 +62,7 @@ export function generateId(): string {
         return crypto.randomUUID();
     }
     if (typeof crypto === "undefined" || typeof crypto.getRandomValues !== "function") {
-        throw new Error("A cryptographically secure random number generator is unavailable.");
+        throw new TypeError("A cryptographically secure random number generator is unavailable.");
     }
 
     const bytes = crypto.getRandomValues(new Uint8Array(16));
